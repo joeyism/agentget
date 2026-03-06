@@ -1,0 +1,24 @@
+{
+  "name": "agentsmd",
+  "version": "0.1.0",
+  "description": "Install AI agents from GitHub repos into your project",
+  "type": "module",
+  "bin": { "agentsmd": "./bin/cli.mjs" },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts"
+  },
+  "files": ["dist", "bin"],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^14.0.3",
+    "simple-git": "^3.32.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
