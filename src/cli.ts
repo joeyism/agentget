@@ -4,7 +4,7 @@ import { add } from './add.js';
 const program = new Command();
 
 program
-  .name('agentsmd')
+  .name('agentget')
   .description('Install AI agents from GitHub repos')
   .version('0.1.0');
 

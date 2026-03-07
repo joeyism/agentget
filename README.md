@@ -1,33 +1,54 @@
-# agentsmd
+# agentget
 
 Install AI agents, instructions, skills, and rules from GitHub repos into your project.
+
+## Installation
+
+```bash
+# npm
+npm install -g agentget
+
+# bun
+bun add -g agentget
+```
+
+Or use without installing via `npx` / `bunx`:
+
+```bash
+npx agentget add owner/repo
+bunx agentget add owner/repo
+```
 
 ## Usage
 
 ```bash
+# Both of these work:
+npx agentget add owner/repo
+npx agent-get add owner/repo
+
 # Install all agents (default)
-npx agentsmd add owner/repo
+npx agentget add owner/repo
 
 # Install everything (agents, skills, instructions, rules)
-npx agentsmd add owner/repo --all
+npx agentget add owner/repo --all
 
 # Install specific agent + all skills/instructions/rules
-npx agentsmd add owner/repo --agent code-reviewer
+npx agentget add owner/repo --agent code-reviewer
 
 # Install only skills
-npx agentsmd add owner/repo --skills-only
+npx agentget add owner/repo --skills-only
 
 # Install only instructions
-npx agentsmd add owner/repo --instructions-only
+npx agentget add owner/repo --instructions-only
 
 # Install only rules
-npx agentsmd add owner/repo --rules-only
+npx agentget add owner/repo --rules-only
 
 # Install specific agent only (no skills/instructions/rules)
-npx agentsmd add owner/repo --agent code-reviewer --agents-only
+npx agentget add owner/repo --agent code-reviewer --agents-only
 
 # Use alternative directory names (for repos with non-standard structure)
-npx agentsmd add VoltAgent/awesome-claude-code-subagents --agents-dir categories
+npx agentget add VoltAgent/awesome-claude-code-subagents --agents-dir categories
 ```
 
 ## Filtering

@@ -1,9 +1,9 @@
 {
-  "name": "agentsmd",
-  "version": "0.1.0",
+  "name": "agentget",
+  "version": "0.2.0",
   "description": "Install AI agents from GitHub repos into your project",
   "type": "module",
-  "bin": { "agentsmd": "./bin/cli.mjs" },
+  "bin": { "agentget": "./bin/cli.mjs", "agent-get": "./bin/cli.mjs" },
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/cli.ts"

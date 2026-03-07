@@ -9,7 +9,7 @@ export interface CloneResult {
 }
 
 export async function cloneRepo(cloneUrl: string): Promise<CloneResult> {
-  const dir = await mkdtemp(join(tmpdir(), 'agentsmd-'));
+  const dir = await mkdtemp(join(tmpdir(), 'agentget-'));
   try {
     const git = simpleGit();
     await git.clone(cloneUrl, dir, ['--depth', '1']);
