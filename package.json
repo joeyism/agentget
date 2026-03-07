@@ -3,12 +3,18 @@
   "version": "0.3.0",
   "description": "Install AI agents from GitHub repos into your project",
   "type": "module",
-  "bin": { "agentget": "./bin/cli.mjs", "agent-get": "./bin/cli.mjs" },
+  "bin": {
+    "agentget": "./bin/cli.mjs",
+    "agent-get": "./bin/cli.mjs"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/cli.ts"
   },
-  "files": ["dist", "bin"],
+  "files": [
+    "dist",
+    "bin"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
