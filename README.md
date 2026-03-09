@@ -1,5 +1,8 @@
 # agentget
 
+[![npm version](https://img.shields.io/npm/v/agentget)](https://www.npmjs.com/package/agentget)
+![npm downloads](https://img.shields.io/npm/dt/agentget)
+
 Install AI agents, instructions, skills, and rules from GitHub repos into your project.
 
 ## Installation
