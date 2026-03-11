@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function DocsSection() {
   return (
     <div
@@ -230,17 +232,15 @@ export function DocsSection() {
 
       {/* Footer link */}
       <div className="mt-14 pt-8 border-t border-white/[0.06]">
-        <a
-          href="https://github.com/joeyism/agentget#readme"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/docs"
           className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-white transition-colors group"
         >
-          View full docs on GitHub
+          View builtin agent docs
           <span className="inline-block transition-transform group-hover:translate-x-0.5">
             &rarr;
           </span>
-        </a>
+        </Link>
       </div>
     </div>
   );
