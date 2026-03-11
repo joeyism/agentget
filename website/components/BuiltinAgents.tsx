@@ -1,75 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-
-interface BuiltinAgent {
-  name: string;
-  flag: string;
-  description: string;
-}
-
-const BUILTIN_AGENTS: BuiltinAgent[] = [
-  {
-    name: "Sisyphus-Junior",
-    flag: "sisyphus-junior",
-    description:
-      "Focused task executor that completes delegated atomic tasks without spawning other agents.",
-  },
-  {
-    name: "Atlas",
-    flag: "atlas",
-    description:
-      "Master orchestrator that drives a full todo list to completion by dispatching tasks to specialized agents in parallel waves.",
-  },
-  {
-    name: "Prometheus",
-    flag: "prometheus",
-    description:
-      "Strategic planning consultant that interviews you to clarify requirements, then generates a structured work plan.",
-  },
-  {
-    name: "Oracle",
-    flag: "oracle",
-    description:
-      "Read-only high-IQ reasoning specialist for architecture decisions, hard debugging, and post-implementation review.",
-  },
-  {
-    name: "Metis",
-    flag: "metis",
-    description:
-      "Pre-planning consultant that classifies intent, surfaces hidden requirements, and produces guardrail directives.",
-  },
-  {
-    name: "Momus",
-    flag: "momus",
-    description:
-      "Work plan reviewer that checks plans for executability and valid references. Only blocks on true blockers.",
-  },
-  {
-    name: "Explore",
-    flag: "explore",
-    description:
-      "Contextual grep specialist for your own codebase. Fire multiple instances in parallel to find patterns and structure.",
-  },
-  {
-    name: "Librarian",
-    flag: "librarian",
-    description:
-      "External reference specialist that finds official documentation, open-source implementations, and best practices.",
-  },
-  {
-    name: "Hephaestus",
-    flag: "hephaestus",
-    description:
-      "Autonomous deep worker that explores thoroughly before writing, then completes complex multi-file implementations end-to-end.",
-  },
-  {
-    name: "Multimodal Looker",
-    flag: "multimodal-looker",
-    description:
-      "Media file interpreter that extracts specific information from PDFs, images, and diagrams.",
-  },
-];
+import {
+  BUILTIN_AGENTS,
+  getBuiltinAgentInstallCommand,
+} from "@/lib/builtin-agents";
 
 function CopyIcon({ className }: { className?: string }) {
   return (
@@ -109,9 +45,7 @@ export function BuiltinAgents() {
 
   const copyCommand = async (flag: string, idx: number) => {
     try {
-      await navigator.clipboard.writeText(
-        `npx agentget add joeyism/agentget --agent ${flag}`
-      );
+      await navigator.clipboard.writeText(getBuiltinAgentInstallCommand(flag));
       setCopiedIdx(idx);
       setTimeout(() => setCopiedIdx(null), 2000);
     } catch {}
@@ -138,9 +72,26 @@ export function BuiltinAgents() {
             data-testid={`builtin-agent-card-${agent.flag}`}
             className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:shadow-lg hover:shadow-neutral-950/50 hover:-translate-y-1 transition-all duration-200 flex flex-col"
           >
-            <h3 className="text-lg font-semibold text-white">{agent.name}</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-400">
+                  {agent.category}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                  {agent.name}
+                </h3>
+              </div>
+
+              <Link
+                href={`/docs/agents/${agent.slug}`}
+                className="text-xs text-neutral-500 hover:text-white transition-colors"
+              >
+                Docs
+              </Link>
+            </div>
+
             <p className="mt-2 text-neutral-400 text-sm leading-relaxed flex-1">
-              {agent.description}
+              {agent.summary}
             </p>
 
             <div
@@ -155,7 +106,7 @@ export function BuiltinAgents() {
             >
               <code className="font-mono text-xs text-neutral-500 truncate flex-1">
                 <span className="text-neutral-600">$ </span>
-                npx agentget add joeyism/agentget --agent {agent.flag}
+                {getBuiltinAgentInstallCommand(agent.flag)}
               </code>
               <span className="text-neutral-600 group-hover/cmd:text-neutral-400 transition-colors shrink-0">
                 {copiedIdx === idx ? (
