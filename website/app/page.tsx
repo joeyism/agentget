@@ -72,7 +72,9 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-20 sm:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 lg:gap-14 items-start">
             <div className="overflow-hidden">
-              <pre className="text-[12px] tracking-[-1px] leading-[125%] text-neutral-500 select-none whitespace-pre font-mono">{ASCII_ART}</pre>
+              <pre className="text-[11px] sm:text-[12px] lg:text-[13px] leading-[120%] text-white select-none whitespace-pre font-mono font-bold drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]">
+                {ASCII_ART}
+              </pre>
             </div>
 
             <div className="flex flex-col gap-6 min-w-0">
