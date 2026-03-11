@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AgentsDirectory } from "@/components/AgentsDirectory";
 import { BuiltinAgents } from "@/components/BuiltinAgents";
 import { DocsSection } from "@/components/DocsSection";
+import { SiteHeader } from "@/components/SiteHeader";
 import agentsData from "@/public/agents-index.json";
 
 const ASCII_ART = `██████╗  ██████╗ ███████╗███╗   ██╗████████╗ ██████╗ ███████╗████████╗
@@ -27,46 +28,7 @@ export default function Home() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-white/[0.06]">
-        <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-emerald-400 font-mono font-bold text-sm select-none">
-              &gt;_
-            </span>
-            <svg
-              className="h-4 w-[7px] text-neutral-700"
-              viewBox="0 0 7 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <line x1="6" y1="1" x2="1" y2="15" />
-            </svg>
-            <span className="font-semibold tracking-tight">agentget</span>
-          </div>
-
-          <nav className="flex items-center gap-5 text-sm text-neutral-400">
-            <a
-              href="https://github.com/joeyism/agentget"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://www.npmjs.com/package/agentget"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              npm
-            </a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader active="home" />
 
       <main>
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-20 sm:pb-28">
