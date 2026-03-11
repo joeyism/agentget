@@ -5,3 +5,5 @@ dist/
 .agents/
 .claude/
 .cursor/
+website/.next/
+website/node_modules/
