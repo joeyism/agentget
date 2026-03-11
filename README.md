@@ -111,7 +111,16 @@ Content is discovered from these patterns in the target repo:
 
 ## Where files go
 
-**Canonical (source of truth):**
+agentget supports **41 AI coding tools**. Content is always written to a canonical location first, then symlinked to detected tool directories.
+
+### Supported vs Detected
+
+- **Supported** — all 41 tools agentget knows how to install into. Run `agentget targets` to list them.
+- **Detected** — the subset whose config directories exist on your machine right now. Only detected targets receive symlinks, avoiding unused dot-directories.
+- **Canonical** — 10 tools that read `.agents/` directly and are always active. No symlink needed.
+
+### Canonical (source of truth)
+
 ```
 .agents/agents/<name>.agent.md
 .agents/instructions/<name>.instructions.md
@@ -119,14 +128,96 @@ Content is discovered from these patterns in the target repo:
 .agents/rules/<name>.rules.md
 ```
 
-**Symlinked into agent tools:**
+### Canonical readers (always active)
+
+These tools read `.agents/` directly — no symlinks needed:
+
+AMP, Cline, Codex, Cursor, Gemini CLI, GitHub Copilot, Kimi Code CLI, OpenCode, Replit, Universal
+
+### Project targets
+
+Symlinks created when the tool's project directory is detected:
 
 | Tool | Path |
 |---|---|
+| AdaL | `.adal/{agents,instructions,skills,rules}/` |
+| Antigravity | `.agent/{agents,instructions,skills,rules}/` |
+| Augment | `.augment/{agents,instructions,skills,rules}/` |
 | Claude Code | `.claude/{agents,instructions,skills,rules}/` |
-| Cursor | `.cursor/{agents,instructions,skills,rules}/` |
-| OpenCode (project) | reads `.agents/` directly |
-| OpenCode (global) | `~/.config/opencode/{agents,instructions,skills,rules}/` |
+| CodeBuddy | `.codebuddy/{agents,instructions,skills,rules}/` |
+| Command Code | `.commandcode/{agents,instructions,skills,rules}/` |
+| Continue | `.continue/{agents,instructions,skills,rules}/` |
+| Cortex Code | `.cortex/{agents,instructions,skills,rules}/` |
+| Crush | `.crush/{agents,instructions,skills,rules}/` |
+| Droid | `.factory/{agents,instructions,skills,rules}/` |
+| Goose | `.goose/{agents,instructions,skills,rules}/` |
+| iFlow CLI | `.iflow/{agents,instructions,skills,rules}/` |
+| Junie | `.junie/{agents,instructions,skills,rules}/` |
+| Kilo Code | `.kilocode/{agents,instructions,skills,rules}/` |
+| Kiro CLI | `.kiro/{agents,instructions,skills,rules}/` |
+| Kode | `.kode/{agents,instructions,skills,rules}/` |
+| MCPJam | `.mcpjam/{agents,instructions,skills,rules}/` |
+| Mistral Vibe | `.vibe/{agents,instructions,skills,rules}/` |
+| Mux | `.mux/{agents,instructions,skills,rules}/` |
+| Neovate | `.neovate/{agents,instructions,skills,rules}/` |
+| OpenClaw | `{agents,instructions,skills,rules}/` (requires `.openclaw`/`.clawdbot`/`.moltbot` marker) |
+| OpenHands | `.openhands/{agents,instructions,skills,rules}/` |
+| Pi | `.pi/{agents,instructions,skills,rules}/` |
+| Pochi | `.pochi/{agents,instructions,skills,rules}/` |
+| Qoder | `.qoder/{agents,instructions,skills,rules}/` |
+| Qwen Code | `.qwen/{agents,instructions,skills,rules}/` |
+| Roo Code | `.roo/{agents,instructions,skills,rules}/` |
+| Trae | `.trae/{agents,instructions,skills,rules}/` |
+| Trae CN | `.trae/{agents,instructions,skills,rules}/` |
+| Windsurf | `.windsurf/{agents,instructions,skills,rules}/` |
+| Zencoder | `.zencoder/{agents,instructions,skills,rules}/` |
+
+### Global targets
+
+Global symlinks are only created when the tool's config directory already exists (or an env var like `CLAUDE_CONFIG_DIR` / `CODEX_HOME` points to it). This avoids spraying unused dot-directories across your home directory.
+
+| Tool | Global path |
+|---|---|
+| AdaL | `~/.adal/` |
+| AMP / Kimi Code CLI / Replit / Universal | `~/.config/agents/` |
+| Antigravity | `~/.gemini/antigravity/` |
+| Augment | `~/.augment/` |
+| Claude Code | `${CLAUDE_CONFIG_DIR:-~/.claude}/` |
+| Cline | `~/.agents/` |
+| CodeBuddy | `~/.codebuddy/` |
+| Codex | `${CODEX_HOME:-~/.codex}/` |
+| Command Code | `~/.commandcode/` |
+| Continue | `~/.continue/` |
+| Cortex Code | `~/.snowflake/cortex/` |
+| Crush | `~/.config/crush/` |
+| Cursor | `~/.cursor/` |
+| Droid | `~/.factory/` |
+| Gemini CLI | `~/.gemini/` |
+| GitHub Copilot | `~/.copilot/` |
+| Goose | `~/.config/goose/` |
+| iFlow CLI | `~/.iflow/` |
+| Junie | `~/.junie/` |
+| Kilo Code | `~/.kilocode/` |
+| Kiro CLI | `~/.kiro/` |
+| Kode | `~/.kode/` |
+| MCPJam | `~/.mcpjam/` |
+| Mistral Vibe | `~/.vibe/` |
+| Mux | `~/.mux/` |
+| Neovate | `~/.neovate/` |
+| OpenClaw / ClawdBot / MoltBot | `~/.openclaw/` (auto-detects `.clawdbot` or `.moltbot`) |
+| OpenCode | `~/.config/opencode/` |
+| OpenHands | `~/.openhands/` |
+| Pi | `~/.pi/agent/` |
+| Pochi | `~/.pochi/` |
+| Qoder | `~/.qoder/` |
+| Qwen Code | `~/.qwen/` |
+| Roo Code | `~/.roo/` |
+| Trae | `~/.trae/` |
+| Trae CN | `~/.trae-cn/` |
+| Windsurf | `~/.codeium/windsurf/` |
+| Zencoder | `~/.zencoder/` |
+
+All global paths contain `{agents,instructions,skills,rules}/` subdirectories.
 
 
 ## Builtin Agents
