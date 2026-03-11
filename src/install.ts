@@ -99,8 +99,9 @@ export async function installItem(
   // Create symlinks for each agent tool
   const symlinks: string[] = [];
   for (const agent of AGENTS) {
+    if (agent.isAvailable && !agent.isAvailable(cwd)) continue;
     const linkPath = agent.getPath(cwd, item.type, item.name, item.extension);
-    if (linkPath === null) continue; // OpenCode project-local reads canonical directly
+    if (linkPath === null) continue;
 
     await createSymlink(canonicalPath, linkPath);
     symlinks.push(linkPath);
