@@ -2,6 +2,7 @@ import { parseSource } from './source-parser.js';
 import { cloneRepo } from './git.js';
 import { discoverContent, ContentType } from './discover.js';
 import { installAll } from './install.js';
+import { printInstallSummary } from './targets.js';
 
 export interface AddOptions {
   agentFilter?: string;
@@ -96,6 +97,8 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
         console.log(`    symlink:   ${link}`);
       }
     }
+
+    printInstallSummary(results, cwd);
   } finally {
     await cleanup();
   }

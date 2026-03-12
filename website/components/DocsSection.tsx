@@ -126,6 +126,27 @@ export function DocsSection() {
             Where Files Go
           </h3>
 
+          <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
+            agentget supports <span className="text-white font-medium">41 AI coding tools</span>.
+            Content is written to a canonical location, then symlinked to detected tool directories.
+          </p>
+
+          {/* Supported vs Detected explanation */}
+          <div className="bg-neutral-900/50 border border-white/[0.06] rounded-lg p-4 mb-6 space-y-2">
+            <p className="text-sm text-neutral-300">
+              <span className="text-emerald-400 font-medium">Supported</span>{" "}
+              — all 41 tools agentget knows how to install into
+            </p>
+            <p className="text-sm text-neutral-300">
+              <span className="text-emerald-400 font-medium">Detected</span>{" "}
+              — the subset whose config directories exist on your machine now. Only these receive symlinks.
+            </p>
+            <p className="text-sm text-neutral-300">
+              <span className="text-emerald-400 font-medium">Canonical</span>{" "}
+              — 10 tools that read <code className="text-neutral-400 bg-neutral-800 px-1 rounded">.agents/</code> directly. Always active, no symlink needed.
+            </p>
+          </div>
+
           <p className="text-sm text-neutral-500 mb-3">
             Canonical paths (source of truth):
           </p>
@@ -138,51 +159,183 @@ export function DocsSection() {
             </code>
           </pre>
 
+          {/* Canonical readers */}
           <p className="text-sm text-neutral-500 mb-3">
-            Symlinked into agent tools:
+            Canonical readers (always active — read <code className="text-neutral-400 bg-neutral-800 px-1 rounded">.agents/</code> directly):
           </p>
-          <div className="overflow-x-auto rounded-lg border border-white/[0.06]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-neutral-900 text-left">
-                  <th className="px-4 py-3 font-medium text-neutral-400">
-                    Tool
-                  </th>
-                  <th className="px-4 py-3 font-medium text-neutral-400">
-                    Path
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {[
-                  [
-                    "Claude Code",
-                    ".claude/{agents,instructions,skills,rules}/",
-                  ],
-                  ["Cursor", ".cursor/{agents,instructions,skills,rules}/"],
-                  ["OpenCode (project)", "reads .agents/ directly"],
-                  [
-                    "OpenCode (global)",
-                    "~/.config/opencode/{agents,instructions,skills,rules}/",
-                  ],
-                ].map(([tool, path], i) => (
-                  <tr
-                    key={tool}
-                    className={
-                      `${i % 2 === 0 ? "bg-white/[0.02]" : ""} hover:bg-white/[0.04] transition-colors`
-                    }
-                  >
-                    <td className="px-4 py-2.5 text-neutral-300 whitespace-nowrap">
-                      {tool}
-                    </td>
-                    <td className="px-4 py-2.5 font-mono text-neutral-400">
-                      {path}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {[
+              "AMP", "Cline", "Codex", "Cursor", "Gemini CLI",
+              "GitHub Copilot", "Kimi Code CLI", "OpenCode", "Replit", "Universal",
+            ].map((name) => (
+              <span
+                key={name}
+                className="inline-block px-2.5 py-1 text-xs font-mono text-neutral-300 bg-neutral-800/60 border border-white/[0.06] rounded-md"
+              >
+                {name}
+              </span>
+            ))}
           </div>
+
+          {/* Project targets (collapsible) */}
+          <details className="group mb-4">
+            <summary className="text-sm text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors mb-3 list-none flex items-center gap-2">
+              <span className="text-neutral-600 group-open:rotate-90 transition-transform inline-block">&#9654;</span>
+              Project targets (31 tools) — symlinked when detected
+            </summary>
+            <div className="overflow-x-auto rounded-lg border border-white/[0.06] mt-2">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-neutral-900 text-left">
+                    <th className="px-4 py-3 font-medium text-neutral-400">
+                      Tool
+                    </th>
+                    <th className="px-4 py-3 font-medium text-neutral-400">
+                      Path
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.06]">
+                  {([
+                    ["AdaL", ".adal/"],
+                    ["Antigravity", ".agent/"],
+                    ["Augment", ".augment/"],
+                    ["Claude Code", ".claude/"],
+                    ["CodeBuddy", ".codebuddy/"],
+                    ["Command Code", ".commandcode/"],
+                    ["Continue", ".continue/"],
+                    ["Cortex Code", ".cortex/"],
+                    ["Crush", ".crush/"],
+                    ["Droid", ".factory/"],
+                    ["Goose", ".goose/"],
+                    ["iFlow CLI", ".iflow/"],
+                    ["Junie", ".junie/"],
+                    ["Kilo Code", ".kilocode/"],
+                    ["Kiro CLI", ".kiro/"],
+                    ["Kode", ".kode/"],
+                    ["MCPJam", ".mcpjam/"],
+                    ["Mistral Vibe", ".vibe/"],
+                    ["Mux", ".mux/"],
+                    ["Neovate", ".neovate/"],
+                    ["OpenClaw", "* (marker-gated)"],
+                    ["OpenHands", ".openhands/"],
+                    ["Pi", ".pi/"],
+                    ["Pochi", ".pochi/"],
+                    ["Qoder", ".qoder/"],
+                    ["Qwen Code", ".qwen/"],
+                    ["Roo Code", ".roo/"],
+                    ["Trae", ".trae/"],
+                    ["Trae CN", ".trae/"],
+                    ["Windsurf", ".windsurf/"],
+                    ["Zencoder", ".zencoder/"],
+                  ] as const).map(([tool, path], i) => (
+                    <tr
+                      key={tool}
+                      className={
+                        `${i % 2 === 0 ? "bg-white/[0.02]" : ""} hover:bg-white/[0.04] transition-colors`
+                      }
+                    >
+                      <td className="px-4 py-2 text-neutral-300 whitespace-nowrap">
+                        {tool}
+                      </td>
+                      <td className="px-4 py-2 font-mono text-neutral-400">
+                        {path}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          {/* Global targets (collapsible) */}
+          <details className="group mb-6">
+            <summary className="text-sm text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors mb-3 list-none flex items-center gap-2">
+              <span className="text-neutral-600 group-open:rotate-90 transition-transform inline-block">&#9654;</span>
+              Global targets (41 tools) — symlinked when config directory exists
+            </summary>
+            <p className="text-xs text-neutral-600 mb-2 mt-2">
+              Only created when the tool&apos;s home directory exists or an env var points to it.
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-white/[0.06] mt-2">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-neutral-900 text-left">
+                    <th className="px-4 py-3 font-medium text-neutral-400">
+                      Tool
+                    </th>
+                    <th className="px-4 py-3 font-medium text-neutral-400">
+                      Global path
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.06]">
+                  {([
+                    ["AdaL", "~/.adal/"],
+                    ["AMP / Kimi Code CLI / Replit / Universal", "~/.config/agents/"],
+                    ["Antigravity", "~/.gemini/antigravity/"],
+                    ["Augment", "~/.augment/"],
+                    ["Claude Code", "${CLAUDE_CONFIG_DIR:-~/.claude}/"],
+                    ["Cline", "~/.agents/"],
+                    ["CodeBuddy", "~/.codebuddy/"],
+                    ["Codex", "${CODEX_HOME:-~/.codex}/"],
+                    ["Command Code", "~/.commandcode/"],
+                    ["Continue", "~/.continue/"],
+                    ["Cortex Code", "~/.snowflake/cortex/"],
+                    ["Crush", "~/.config/crush/"],
+                    ["Cursor", "~/.cursor/"],
+                    ["Droid", "~/.factory/"],
+                    ["Gemini CLI", "~/.gemini/"],
+                    ["GitHub Copilot", "~/.copilot/"],
+                    ["Goose", "~/.config/goose/"],
+                    ["iFlow CLI", "~/.iflow/"],
+                    ["Junie", "~/.junie/"],
+                    ["Kilo Code", "~/.kilocode/"],
+                    ["Kiro CLI", "~/.kiro/"],
+                    ["Kode", "~/.kode/"],
+                    ["MCPJam", "~/.mcpjam/"],
+                    ["Mistral Vibe", "~/.vibe/"],
+                    ["Mux", "~/.mux/"],
+                    ["Neovate", "~/.neovate/"],
+                    ["OpenClaw", "~/.openclaw/"],
+                    ["OpenCode", "~/.config/opencode/"],
+                    ["OpenHands", "~/.openhands/"],
+                    ["Pi", "~/.pi/agent/"],
+                    ["Pochi", "~/.pochi/"],
+                    ["Qoder", "~/.qoder/"],
+                    ["Qwen Code", "~/.qwen/"],
+                    ["Roo Code", "~/.roo/"],
+                    ["Trae", "~/.trae/"],
+                    ["Trae CN", "~/.trae-cn/"],
+                    ["Windsurf", "~/.codeium/windsurf/"],
+                    ["Zencoder", "~/.zencoder/"],
+                  ] as const).map(([tool, path], i) => (
+                    <tr
+                      key={tool}
+                      className={
+                        `${i % 2 === 0 ? "bg-white/[0.02]" : ""} hover:bg-white/[0.04] transition-colors`
+                      }
+                    >
+                      <td className="px-4 py-2 text-neutral-300 whitespace-nowrap">
+                        {tool}
+                      </td>
+                      <td className="px-4 py-2 font-mono text-neutral-400">
+                        {path}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          {/* CLI hint */}
+          <pre className="bg-neutral-900 border border-white/[0.06] text-neutral-100 rounded-lg p-4 overflow-x-auto font-mono text-sm leading-relaxed">
+            <code>
+              <span className="text-neutral-500"># See all supported targets and which are detected on your machine</span>
+              {"\n"}npx agentget targets
+            </code>
+          </pre>
         </div>
 
         {/* ── What It Installs ── */}

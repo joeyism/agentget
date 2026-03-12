@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { add } from './add.js';
+import { printTargets } from './targets.js';
 
 const program = new Command();
 
@@ -50,6 +51,13 @@ program
       console.error(`Error: ${(err as Error).message}`);
       process.exit(1);
     }
+  });
+
+program
+  .command('targets')
+  .description('Show supported, detected, and undetected agent targets')
+  .action(() => {
+    printTargets(process.cwd());
   });
 
 program.parse();
