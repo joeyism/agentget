@@ -29,10 +29,12 @@ async function selectTargets(cwd: string): Promise<AgentTarget[]> {
   }
 
   const detectedTargets = allTargets.filter((t) => !t.isAvailable || t.isAvailable(cwd));
+  const undetectedTargets = allTargets.filter((t) => t.isAvailable && !t.isAvailable(cwd));
+  const sortedTargets = [...detectedTargets, ...undetectedTargets];
 
   const result = await autocompleteMultiselect<AgentTarget>({
     message: 'Select install targets',
-    options: allTargets.map((t) => ({ value: t, label: t.name })),
+    options: sortedTargets.map((t) => ({ value: t, label: t.name })),
     initialValues: detectedTargets,
     required: false,
   });
