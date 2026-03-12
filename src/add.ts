@@ -1,8 +1,10 @@
+import { autocompleteMultiselect, isCancel } from '@clack/prompts';
 import { parseSource } from './source-parser.js';
 import { cloneRepo } from './git.js';
 import { discoverContent, ContentType } from './discover.js';
 import { installAll } from './install.js';
 import { printInstallSummary } from './targets.js';
+import { AGENTS, type AgentTarget } from './agents.js';
 
 export interface AddOptions {
   agentFilter?: string;
@@ -15,6 +17,32 @@ export interface AddOptions {
   skillsDir?: string;
   instructionsDir?: string;
   rulesDir?: string;
+}
+
+async function selectTargets(cwd: string): Promise<AgentTarget[]> {
+  // All targets with real paths (exclude canonical readers that return null)
+  const allTargets = AGENTS.filter((t) => t.getPath(cwd, 'agent', 'test') !== null);
+
+  if (!process.stdout.isTTY) {
+    // Non-interactive: auto-select all detected targets
+    return allTargets.filter((t) => !t.isAvailable || t.isAvailable(cwd));
+  }
+
+  const detectedTargets = allTargets.filter((t) => !t.isAvailable || t.isAvailable(cwd));
+
+  const result = await autocompleteMultiselect<AgentTarget>({
+    message: 'Select install targets',
+    options: allTargets.map((t) => ({ value: t, label: t.name })),
+    initialValues: detectedTargets,
+    required: false,
+  });
+
+  if (isCancel(result)) {
+    console.log('Cancelled.');
+    process.exit(0);
+  }
+
+  return result as AgentTarget[];
 }
 
 export async function add(source: string, options: AddOptions = {}): Promise<void> {
@@ -34,9 +62,8 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
 
     // Determine which content types to include
     const includeTypes = new Set<ContentType>();
-    
+
     if (options.all) {
-      // --all: include everything
       includeTypes.add('agent');
       includeTypes.add('skill');
       includeTypes.add('instruction');
@@ -48,35 +75,28 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
     } else if (options.rulesOnly) {
       includeTypes.add('rule');
     } else if (options.agentFilter) {
-      // --agent includes that agent + all skills/instructions/rules
       includeTypes.add('agent');
       includeTypes.add('skill');
       includeTypes.add('instruction');
       includeTypes.add('rule');
     } else {
-      // Default: agents only
       includeTypes.add('agent');
     }
 
-    // Filter by content type
-    items = items.filter(item => includeTypes.has(item.type));
+    items = items.filter((item) => includeTypes.has(item.type));
 
-    // Filter to specific agent if requested
     if (options.agentFilter) {
-      const agentItems = items.filter(item => item.type === 'agent');
-      const matchingAgent = agentItems.find(item => item.name === options.agentFilter);
-      
+      const agentItems = items.filter((item) => item.type === 'agent');
+      const matchingAgent = agentItems.find((item) => item.name === options.agentFilter);
+
       if (!matchingAgent) {
-        const availableAgents = agentItems.map(item => item.name);
+        const availableAgents = agentItems.map((item) => item.name);
         throw new Error(
-          `Agent "${options.agentFilter}" not found. Available agents: ${availableAgents.join(', ') || 'none'}`
+          `Agent "${options.agentFilter}" not found. Available agents: ${availableAgents.join(', ') || 'none'}`,
         );
       }
-      
-      // Keep only the matching agent, but preserve all skills/instructions
-      items = items.filter(item => 
-        item.type !== 'agent' || item.name === options.agentFilter
-      );
+
+      items = items.filter((item) => item.type !== 'agent' || item.name === options.agentFilter);
       console.log(`Filtering to agent: ${options.agentFilter}`);
     }
 
@@ -85,16 +105,22 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
       console.log(`  ${item.type}: ${item.name}`);
     }
 
-    console.log(`\nInstalling...`);
     const cwd = process.cwd();
-    const results = await installAll(items, cwd);
+    const selectedTargets = await selectTargets(cwd);
+
+    if (selectedTargets.length === 0) {
+      console.log('\nNo targets selected — nothing installed.');
+      return;
+    }
+
+    console.log(`\nInstalling...`);
+    const results = await installAll(items, selectedTargets, cwd);
 
     console.log(`\n✓ Installed ${results.length} item(s):`);
     for (const result of results) {
       console.log(`  ${result.item.type}: ${result.item.name}`);
-      console.log(`    canonical: ${result.canonicalPath}`);
-      for (const link of result.symlinks) {
-        console.log(`    symlink:   ${link}`);
+      for (const p of result.installedPaths) {
+        console.log(`    → ${p}`);
       }
     }
 

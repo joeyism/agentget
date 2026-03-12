@@ -92,6 +92,8 @@ function resolveOpenClawProjectDir(cwd: string): string | null {
 }
 
 export const AGENTS: AgentTarget[] = [
+  createPathTarget('agentget (.agents/)', false, (cwd) => join(cwd, '.agents'), () => true),
+
   createCanonicalTarget('AMP'),
   createCanonicalTarget('Cline'),
   createCanonicalTarget('Codex'),

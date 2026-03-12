@@ -84,7 +84,7 @@ export function printTargets(cwd: string): void {
   console.log('');
 
   if (detectedCount > 0) {
-    console.log(`Detected (${detectedCount}) — will receive symlinks:`);
+    console.log(`Detected (${detectedCount}) — will receive files:`);
     if (c.detectedProject.length > 0) {
       console.log(`  Project: ${nameList(c.detectedProject)}`);
     }
@@ -95,7 +95,7 @@ export function printTargets(cwd: string): void {
   }
 
   if (undetectedCount > 0) {
-    console.log(`Not detected (${undetectedCount}) — skipped until tools installed:`);
+    console.log(`Not detected (${undetectedCount}) — unchecked by default until tools installed:`);
     if (c.undetectedProject.length > 0) {
       console.log(`  Project: ${nameList(c.undetectedProject)}`);
     }
@@ -119,31 +119,14 @@ export function printTargets(cwd: string): void {
 }
 
 export function printInstallSummary(results: InstallResult[], cwd: string): void {
-  const c = classifyTargets(cwd);
   const total = getUniqueAgentCount();
-  const totalSymlinks = results.reduce((sum, r) => sum + r.symlinks.length, 0);
-  const detectedProject = c.detectedProject.length;
-  const detectedGlobal = c.detectedGlobal.length;
-  const skipped = c.undetectedProject.length + c.undetectedGlobal.length;
+  const totalInstalled = results.reduce((sum, r) => sum + r.installedPaths.length, 0);
 
   console.log(`\nTarget summary:`);
-  console.log(`  ✓ Canonical .agents/ populated`);
-  console.log(`  ○ ${c.canonical.length} canonical readers (always active)`);
-
-  if (totalSymlinks > 0) {
-    console.log(
-      `  ✓ ${detectedProject + detectedGlobal} target(s) detected — ${totalSymlinks} symlink(s) created`,
-    );
-    if (skipped > 0) {
-      console.log(`  ✗ ${skipped} target(s) skipped (not detected)`);
-    }
+  if (totalInstalled > 0) {
+    console.log(`  ✓ ${totalInstalled} file(s) installed`);
   } else {
-    console.log(`  ⚠ No external targets detected — no symlinks created`);
-    console.log('');
-    console.log(`  Content is available to canonical readers`);
-    console.log(`  (${nameList(c.canonical)}).`);
-    console.log(`  To link to other tools, install them first and re-run.`);
+    console.log(`  ⚠ No targets selected — nothing installed`);
   }
-
   console.log(`  Run \`agentget targets\` to see all ${total} supported targets.`);
 }
