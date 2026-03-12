@@ -15,7 +15,31 @@
     "dist",
     "bin"
   ],
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joeyism/agentget"
+  },
+  "homepage": "https://github.com/joeyism/agentget",
+  "bugs": {
+    "url": "https://github.com/joeyism/agentget/issues"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "agents",
+    "cli",
+    "install",
+    "claude",
+    "cursor",
+    "opencode",
+    "copilot",
+    "cline",
+    "codex",
+    "llm",
+    "mcp",
+    "subagent",
+    "npm"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
