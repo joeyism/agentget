@@ -55,7 +55,7 @@ function createPathTarget(
   name: string,
   isGlobal: boolean,
   getBasePath: (cwd: string) => string,
-  isAvailable?: (cwd: string) => boolean,
+  isAvailable?: (cwd: string) => boolean
 ): AgentTarget {
   return {
     name,
@@ -69,15 +69,25 @@ function createPathTarget(
 }
 
 function createProjectTarget(name: string, dirName: string): AgentTarget {
-  return createPathTarget(name, false, (cwd) => join(cwd, dirName), (cwd) => pathExists(join(cwd, dirName)));
+  return createPathTarget(
+    name,
+    false,
+    (cwd) => join(cwd, dirName),
+    (cwd) => pathExists(join(cwd, dirName))
+  );
 }
 
 function createGlobalTarget(
   name: string,
   getBasePath: () => string,
-  isAvailable: () => boolean,
+  isAvailable: () => boolean
 ): AgentTarget {
-  return createPathTarget(name, true, () => getBasePath(), () => isAvailable());
+  return createPathTarget(
+    name,
+    true,
+    () => getBasePath(),
+    () => isAvailable()
+  );
 }
 
 function resolveOpenClawHome(): string | null {
@@ -92,7 +102,12 @@ function resolveOpenClawProjectDir(cwd: string): string | null {
 }
 
 export const AGENTS: AgentTarget[] = [
-  createPathTarget('agentget (.agents/)', false, (cwd) => join(cwd, '.agents'), () => true),
+  createPathTarget(
+    'agentget (.agents/)',
+    false,
+    (cwd) => join(cwd, '.agents'),
+    () => true
+  ),
 
   createCanonicalTarget('AMP'),
   createCanonicalTarget('Cline'),
@@ -132,7 +147,7 @@ export const AGENTS: AgentTarget[] = [
   createProjectTarget('Qwen Code', '.qwen'),
   createProjectTarget('Roo Code', '.roo'),
   createProjectTarget('Trae', '.trae'),
-  createProjectTarget('Trae CN', '.trae'),      // shares .trae/ with Trae per official skills.sh
+  createProjectTarget('Trae CN', '.trae'), // shares .trae/ with Trae per official skills.sh
   createProjectTarget('Windsurf', '.windsurf'),
   createProjectTarget('Zencoder', '.zencoder'),
 
@@ -140,48 +155,212 @@ export const AGENTS: AgentTarget[] = [
     'OpenClaw',
     false,
     (cwd) => cwd,
-    (cwd) => resolveOpenClawProjectDir(cwd) !== null,
+    (cwd) => resolveOpenClawProjectDir(cwd) !== null
   ),
 
-  createGlobalTarget('AdaL (global)', () => homePath('.adal'), () => pathExists(homePath('.adal'))),
-  createGlobalTarget('AMP (global)', () => configPath('agents'), () => pathExists(configPath('agents'))),
-  createGlobalTarget('Antigravity (global)', () => homePath('.gemini', 'antigravity'), () => pathExists(homePath('.gemini', 'antigravity'))),
-  createGlobalTarget('Augment (global)', () => homePath('.augment'), () => pathExists(homePath('.augment'))),
-  createGlobalTarget('Claude Code (global)', () => process.env.CLAUDE_CONFIG_DIR || homePath('.claude'), () => Boolean(process.env.CLAUDE_CONFIG_DIR) || pathExists(homePath('.claude'))),
-  createGlobalTarget('Cline (global)', () => homePath('.agents'), () => pathExists(homePath('.agents'))),
-  createGlobalTarget('CodeBuddy (global)', () => homePath('.codebuddy'), () => pathExists(homePath('.codebuddy'))),
-  createGlobalTarget('Codex (global)', () => process.env.CODEX_HOME || homePath('.codex'), () => Boolean(process.env.CODEX_HOME) || pathExists(homePath('.codex'))),
-  createGlobalTarget('Command Code (global)', () => homePath('.commandcode'), () => pathExists(homePath('.commandcode'))),
-  createGlobalTarget('Continue (global)', () => homePath('.continue'), () => pathExists(homePath('.continue'))),
-  createGlobalTarget('Cortex Code (global)', () => homePath('.snowflake', 'cortex'), () => pathExists(homePath('.snowflake', 'cortex'))),
-  createGlobalTarget('Crush (global)', () => configPath('crush'), () => pathExists(configPath('crush'))),
-  createGlobalTarget('Cursor (global)', () => homePath('.cursor'), () => pathExists(homePath('.cursor'))),
-  createGlobalTarget('Droid (global)', () => homePath('.factory'), () => pathExists(homePath('.factory'))),
-  createGlobalTarget('Gemini CLI (global)', () => homePath('.gemini'), () => pathExists(homePath('.gemini'))),
-  createGlobalTarget('GitHub Copilot (global)', () => homePath('.copilot'), () => pathExists(homePath('.copilot'))),
-  createGlobalTarget('Goose (global)', () => configPath('goose'), () => pathExists(configPath('goose'))),
-  createGlobalTarget('iFlow CLI (global)', () => homePath('.iflow'), () => pathExists(homePath('.iflow'))),
-  createGlobalTarget('Junie (global)', () => homePath('.junie'), () => pathExists(homePath('.junie'))),
-  createGlobalTarget('Kilo Code (global)', () => homePath('.kilocode'), () => pathExists(homePath('.kilocode'))),
-  createGlobalTarget('Kimi Code CLI (global)', () => configPath('agents'), () => pathExists(configPath('agents'))),
-  createGlobalTarget('Kiro CLI (global)', () => homePath('.kiro'), () => pathExists(homePath('.kiro'))),
-  createGlobalTarget('Kode (global)', () => homePath('.kode'), () => pathExists(homePath('.kode'))),
-  createGlobalTarget('MCPJam (global)', () => homePath('.mcpjam'), () => pathExists(homePath('.mcpjam'))),
-  createGlobalTarget('Mistral Vibe (global)', () => homePath('.vibe'), () => pathExists(homePath('.vibe'))),
-  createGlobalTarget('Mux (global)', () => homePath('.mux'), () => pathExists(homePath('.mux'))),
-  createGlobalTarget('Neovate (global)', () => homePath('.neovate'), () => pathExists(homePath('.neovate'))),
-  createGlobalTarget('OpenClaw (global)', () => resolveOpenClawHome() || homePath('.openclaw'), () => resolveOpenClawHome() !== null),
-  createGlobalTarget('OpenCode (global)', () => configPath('opencode'), () => pathExists(configPath('opencode'))),
-  createGlobalTarget('OpenHands (global)', () => homePath('.openhands'), () => pathExists(homePath('.openhands'))),
-  createGlobalTarget('Pi (global)', () => homePath('.pi', 'agent'), () => pathExists(homePath('.pi', 'agent'))),
-  createGlobalTarget('Pochi (global)', () => homePath('.pochi'), () => pathExists(homePath('.pochi'))),
-  createGlobalTarget('Qoder (global)', () => homePath('.qoder'), () => pathExists(homePath('.qoder'))),
-  createGlobalTarget('Qwen Code (global)', () => homePath('.qwen'), () => pathExists(homePath('.qwen'))),
-  createGlobalTarget('Replit (global)', () => configPath('agents'), () => pathExists(configPath('agents'))),
-  createGlobalTarget('Roo Code (global)', () => homePath('.roo'), () => pathExists(homePath('.roo'))),
-  createGlobalTarget('Trae (global)', () => homePath('.trae'), () => pathExists(homePath('.trae'))),
-  createGlobalTarget('Trae CN (global)', () => homePath('.trae-cn'), () => pathExists(homePath('.trae-cn'))),
-  createGlobalTarget('Universal (global)', () => configPath('agents'), () => pathExists(configPath('agents'))),
-  createGlobalTarget('Windsurf (global)', () => homePath('.codeium', 'windsurf'), () => pathExists(homePath('.codeium', 'windsurf'))),
-  createGlobalTarget('Zencoder (global)', () => homePath('.zencoder'), () => pathExists(homePath('.zencoder'))),
+  createGlobalTarget(
+    'AdaL (global)',
+    () => homePath('.adal'),
+    () => pathExists(homePath('.adal'))
+  ),
+  createGlobalTarget(
+    'AMP (global)',
+    () => configPath('agents'),
+    () => pathExists(configPath('agents'))
+  ),
+  createGlobalTarget(
+    'Antigravity (global)',
+    () => homePath('.gemini', 'antigravity'),
+    () => pathExists(homePath('.gemini', 'antigravity'))
+  ),
+  createGlobalTarget(
+    'Augment (global)',
+    () => homePath('.augment'),
+    () => pathExists(homePath('.augment'))
+  ),
+  createGlobalTarget(
+    'Claude Code (global)',
+    () => process.env.CLAUDE_CONFIG_DIR || homePath('.claude'),
+    () => Boolean(process.env.CLAUDE_CONFIG_DIR) || pathExists(homePath('.claude'))
+  ),
+  createGlobalTarget(
+    'Cline (global)',
+    () => homePath('.agents'),
+    () => pathExists(homePath('.agents'))
+  ),
+  createGlobalTarget(
+    'CodeBuddy (global)',
+    () => homePath('.codebuddy'),
+    () => pathExists(homePath('.codebuddy'))
+  ),
+  createGlobalTarget(
+    'Codex (global)',
+    () => process.env.CODEX_HOME || homePath('.codex'),
+    () => Boolean(process.env.CODEX_HOME) || pathExists(homePath('.codex'))
+  ),
+  createGlobalTarget(
+    'Command Code (global)',
+    () => homePath('.commandcode'),
+    () => pathExists(homePath('.commandcode'))
+  ),
+  createGlobalTarget(
+    'Continue (global)',
+    () => homePath('.continue'),
+    () => pathExists(homePath('.continue'))
+  ),
+  createGlobalTarget(
+    'Cortex Code (global)',
+    () => homePath('.snowflake', 'cortex'),
+    () => pathExists(homePath('.snowflake', 'cortex'))
+  ),
+  createGlobalTarget(
+    'Crush (global)',
+    () => configPath('crush'),
+    () => pathExists(configPath('crush'))
+  ),
+  createGlobalTarget(
+    'Cursor (global)',
+    () => homePath('.cursor'),
+    () => pathExists(homePath('.cursor'))
+  ),
+  createGlobalTarget(
+    'Droid (global)',
+    () => homePath('.factory'),
+    () => pathExists(homePath('.factory'))
+  ),
+  createGlobalTarget(
+    'Gemini CLI (global)',
+    () => homePath('.gemini'),
+    () => pathExists(homePath('.gemini'))
+  ),
+  createGlobalTarget(
+    'GitHub Copilot (global)',
+    () => homePath('.copilot'),
+    () => pathExists(homePath('.copilot'))
+  ),
+  createGlobalTarget(
+    'Goose (global)',
+    () => configPath('goose'),
+    () => pathExists(configPath('goose'))
+  ),
+  createGlobalTarget(
+    'iFlow CLI (global)',
+    () => homePath('.iflow'),
+    () => pathExists(homePath('.iflow'))
+  ),
+  createGlobalTarget(
+    'Junie (global)',
+    () => homePath('.junie'),
+    () => pathExists(homePath('.junie'))
+  ),
+  createGlobalTarget(
+    'Kilo Code (global)',
+    () => homePath('.kilocode'),
+    () => pathExists(homePath('.kilocode'))
+  ),
+  createGlobalTarget(
+    'Kimi Code CLI (global)',
+    () => configPath('agents'),
+    () => pathExists(configPath('agents'))
+  ),
+  createGlobalTarget(
+    'Kiro CLI (global)',
+    () => homePath('.kiro'),
+    () => pathExists(homePath('.kiro'))
+  ),
+  createGlobalTarget(
+    'Kode (global)',
+    () => homePath('.kode'),
+    () => pathExists(homePath('.kode'))
+  ),
+  createGlobalTarget(
+    'MCPJam (global)',
+    () => homePath('.mcpjam'),
+    () => pathExists(homePath('.mcpjam'))
+  ),
+  createGlobalTarget(
+    'Mistral Vibe (global)',
+    () => homePath('.vibe'),
+    () => pathExists(homePath('.vibe'))
+  ),
+  createGlobalTarget(
+    'Mux (global)',
+    () => homePath('.mux'),
+    () => pathExists(homePath('.mux'))
+  ),
+  createGlobalTarget(
+    'Neovate (global)',
+    () => homePath('.neovate'),
+    () => pathExists(homePath('.neovate'))
+  ),
+  createGlobalTarget(
+    'OpenClaw (global)',
+    () => resolveOpenClawHome() || homePath('.openclaw'),
+    () => resolveOpenClawHome() !== null
+  ),
+  createGlobalTarget(
+    'OpenCode (global)',
+    () => configPath('opencode'),
+    () => pathExists(configPath('opencode'))
+  ),
+  createGlobalTarget(
+    'OpenHands (global)',
+    () => homePath('.openhands'),
+    () => pathExists(homePath('.openhands'))
+  ),
+  createGlobalTarget(
+    'Pi (global)',
+    () => homePath('.pi', 'agent'),
+    () => pathExists(homePath('.pi', 'agent'))
+  ),
+  createGlobalTarget(
+    'Pochi (global)',
+    () => homePath('.pochi'),
+    () => pathExists(homePath('.pochi'))
+  ),
+  createGlobalTarget(
+    'Qoder (global)',
+    () => homePath('.qoder'),
+    () => pathExists(homePath('.qoder'))
+  ),
+  createGlobalTarget(
+    'Qwen Code (global)',
+    () => homePath('.qwen'),
+    () => pathExists(homePath('.qwen'))
+  ),
+  createGlobalTarget(
+    'Replit (global)',
+    () => configPath('agents'),
+    () => pathExists(configPath('agents'))
+  ),
+  createGlobalTarget(
+    'Roo Code (global)',
+    () => homePath('.roo'),
+    () => pathExists(homePath('.roo'))
+  ),
+  createGlobalTarget(
+    'Trae (global)',
+    () => homePath('.trae'),
+    () => pathExists(homePath('.trae'))
+  ),
+  createGlobalTarget(
+    'Trae CN (global)',
+    () => homePath('.trae-cn'),
+    () => pathExists(homePath('.trae-cn'))
+  ),
+  createGlobalTarget(
+    'Universal (global)',
+    () => configPath('agents'),
+    () => pathExists(configPath('agents'))
+  ),
+  createGlobalTarget(
+    'Windsurf (global)',
+    () => homePath('.codeium', 'windsurf'),
+    () => pathExists(homePath('.codeium', 'windsurf'))
+  ),
+  createGlobalTarget(
+    'Zencoder (global)',
+    () => homePath('.zencoder'),
+    () => pathExists(homePath('.zencoder'))
+  ),
 ];

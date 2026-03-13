@@ -118,7 +118,7 @@ export function printTargets(cwd: string): void {
   console.log(`  • OpenClaw project target requires .openclaw/.clawdbot/.moltbot marker dir`);
 }
 
-export function printInstallSummary(results: InstallResult[], cwd: string): void {
+export function printInstallSummary(results: InstallResult[], _cwd: string): void {
   const total = getUniqueAgentCount();
   const totalInstalled = results.reduce((sum, r) => sum + r.installedPaths.length, 0);
 

@@ -94,7 +94,7 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
       if (!matchingAgent) {
         const availableAgents = agentItems.map((item) => item.name);
         throw new Error(
-          `Agent "${options.agentFilter}" not found. Available agents: ${availableAgents.join(', ') || 'none'}`,
+          `Agent "${options.agentFilter}" not found. Available agents: ${availableAgents.join(', ') || 'none'}`
         );
       }
 
