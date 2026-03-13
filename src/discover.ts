@@ -5,7 +5,7 @@ export type ContentType = 'agent' | 'instruction' | 'skill' | 'rule';
 
 export interface DiscoveredItem {
   type: ContentType;
-  name: string;      // e.g. "4.1-Beast", "a11y", "add-educational-comments"
+  name: string; // e.g. "4.1-Beast", "a11y", "add-educational-comments"
   sourcePath: string; // absolute path to file or folder in cloned repo
   extension?: string; // original file extension (e.g. ".md", ".agent.md"), undefined for skills (folders)
 }
@@ -56,13 +56,13 @@ async function exists(p: string): Promise<boolean> {
 
 async function scanAgents(dir: string, items: DiscoveredItem[]): Promise<void> {
   if (!(await exists(dir))) return;
-  
+
   async function scanRecursive(currentDir: string): Promise<void> {
     const entries = await readdir(currentDir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = join(currentDir, entry.name);
-      
+
       if (entry.isDirectory()) {
         // Recurse into subdirectories
         await scanRecursive(fullPath);
@@ -86,7 +86,7 @@ async function scanAgents(dir: string, items: DiscoveredItem[]): Promise<void> {
       }
     }
   }
-  
+
   await scanRecursive(dir);
 }
 

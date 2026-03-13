@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { AgentsDirectory } from "@/components/AgentsDirectory";
 import { BuiltinAgents } from "@/components/BuiltinAgents";
 import { DocsSection } from "@/components/DocsSection";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SubmitAgentSection } from "@/components/SubmitAgentSection";
+import { SupportedTargetsMarquee } from "@/components/SupportedTargetsMarquee";
 import agentsData from "@/public/agents-index.json";
 
 const ASCII_ART = ` █████╗  ██████╗ ███████╗███╗   ██╗████████╗███████╗
@@ -34,10 +34,12 @@ export default function Home() {
       <main>
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-20 sm:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 lg:gap-14 items-start">
-            <div className="overflow-hidden">
+            <div className="w-[56ch] max-w-full">
               <pre className="text-[11px] sm:text-[12px] lg:text-[13px] leading-[120%] text-white select-none whitespace-pre font-mono font-bold drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]">
                 {ASCII_ART}
               </pre>
+
+              <SupportedTargetsMarquee />
             </div>
 
             <div className="flex flex-col gap-6 min-w-0">
@@ -93,71 +95,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
 
-        <section data-testid="marquee-section" className="border-t border-white/[0.06] py-12 sm:py-16">
-          <h2 className="text-center text-sm font-medium uppercase tracking-widest text-neutral-500 mb-8">
-            Available for these agents
-          </h2>
-          <div className="overflow-hidden">
-            <div className="marquee-track flex w-max items-center gap-16 px-8">
-              {[0, 1].map((set) => (
-                <div key={set} className="flex items-center gap-16 shrink-0">
-                  <a
-                    href="https://claude.ai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"
-                  >
-                    <Image
-                      src="/agents/claude-code.svg"
-                      alt="Claude Code"
-                      width={44}
-                      height={44}
-                      className="rounded-lg"
-                    />
-                    <span className="text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors font-mono">
-                      Claude Code
-                    </span>
-                  </a>
-                  <a
-                    href="https://cursor.sh"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"
-                  >
-                    <Image
-                      src="/agents/cursor.svg"
-                      alt="Cursor"
-                      width={44}
-                      height={44}
-                      className="rounded-lg"
-                    />
-                    <span className="text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors font-mono">
-                      Cursor
-                    </span>
-                  </a>
-                  <a
-                    href="https://opencode.ai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"
-                  >
-                    <Image
-                      src="/agents/opencode.svg"
-                      alt="OpenCode"
-                      width={44}
-                      height={44}
-                      className="rounded-lg"
-                    />
-                    <span className="text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors font-mono">
-                      OpenCode
-                    </span>
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
 
         <section className="border-t border-white/[0.06]">

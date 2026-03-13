@@ -8,7 +8,7 @@ export interface InstallResult {
   installedPaths: string[];
 }
 
-function stripFrontmatter(content: string): string {
+export function stripFrontmatter(content: string): string {
   const lines = content.split('\n');
 
   if (lines[0] !== '---') {
@@ -48,7 +48,7 @@ async function copyItem(src: string, dest: string): Promise<void> {
 export async function installItem(
   item: DiscoveredItem,
   targets: AgentTarget[],
-  cwd: string,
+  cwd: string
 ): Promise<InstallResult> {
   const installedPaths: string[] = [];
 
@@ -66,7 +66,7 @@ export async function installItem(
 export async function installAll(
   items: DiscoveredItem[],
   targets: AgentTarget[],
-  cwd: string,
+  cwd: string
 ): Promise<InstallResult[]> {
   const results: InstallResult[] = [];
   for (const item of items) {
