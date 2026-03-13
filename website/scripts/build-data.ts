@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
+import { AGENTS } from "../../src/agents";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,10 @@ interface AgentEntry {
   url: string;
 }
 
+interface SupportedTargetEntry {
+  name: string;
+}
+
 function titleCase(slug: string): string {
   return slug
     .split("-")
@@ -53,10 +58,30 @@ function sanitizeDescription(desc: string, repo: string): string {
   return cleaned;
 }
 
+function buildSupportedTargets(): SupportedTargetEntry[] {
+  const seen = new Set<string>();
+
+  return AGENTS.flatMap((target) => {
+    if (target.name === "agentget (.agents/)") {
+      return [];
+    }
+
+    const name = target.name.replace(/ \(global\)$/, "");
+
+    if (seen.has(name)) {
+      return [];
+    }
+
+    seen.add(name);
+    return [{ name }];
+  });
+}
+
 function main(): void {
   const rootDir = resolve(__dirname, "..");
   const sourcePath = resolve(rootDir, "sources.json");
   const outputPath = resolve(rootDir, "public", "agents-index.json");
+  const supportedTargetsPath = resolve(rootDir, "public", "supported-targets.json");
 
   console.log("Reading sources.json...");
   const raw = readFileSync(sourcePath, "utf-8");
@@ -94,10 +119,15 @@ function main(): void {
   const output = JSON.stringify(agents);
   writeFileSync(outputPath, output, "utf-8");
 
+  const supportedTargets = buildSupportedTargets();
+  writeFileSync(supportedTargetsPath, JSON.stringify(supportedTargets), "utf-8");
+
   const rawKB = (Buffer.byteLength(output, "utf-8") / 1024).toFixed(1);
   const gzipKB = (gzipSync(output).byteLength / 1024).toFixed(1);
   console.log(`Written to ${outputPath}`);
   console.log(`  Raw: ${rawKB}KB | Gzipped (transfer size): ${gzipKB}KB`);
+  console.log(`Written to ${supportedTargetsPath}`);
+  console.log(`Supported targets: ${supportedTargets.length}`);
 
   const hasLongDesc = output.includes("long_description");
   const wrappedQuotes = agents.filter(
@@ -107,18 +137,21 @@ function main(): void {
   const missingHttps = agents.filter(
     (a) => !a.url.startsWith("https://")
   ).length;
+  const duplicateSupportedTargets = supportedTargets.length !== new Set(supportedTargets.map((target) => target.name)).size;
 
   console.log("\n--- Verification ---");
   console.log(`Entries: ${agents.length}`);
   console.log(`Contains long_description: ${hasLongDesc}`);
   console.log(`Wrapped quotes remaining: ${wrappedQuotes}`);
   console.log(`URLs missing https://: ${missingHttps}`);
+  console.log(`Duplicate supported targets: ${duplicateSupportedTargets}`);
 
   const failed =
     hasLongDesc ||
     wrappedQuotes > 0 ||
     missingHttps > 0 ||
-    agents.length !== keys.length;
+    agents.length !== keys.length ||
+    duplicateSupportedTargets;
 
   if (failed) {
     console.error("\nVerification FAILED!");
