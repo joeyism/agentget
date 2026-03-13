@@ -5,6 +5,7 @@ import { AgentsDirectory } from "@/components/AgentsDirectory";
 import { BuiltinAgents } from "@/components/BuiltinAgents";
 import { DocsSection } from "@/components/DocsSection";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SubmitAgentSection } from "@/components/SubmitAgentSection";
 import { SupportedTargetsMarquee } from "@/components/SupportedTargetsMarquee";
 import agentsData from "@/public/agents-index.json";
 
@@ -99,6 +100,10 @@ export default function Home() {
 
         <section className="border-t border-white/[0.06]">
           <AgentsDirectory agents={agentsData} />
+        </section>
+
+        <section className="border-t border-white/[0.06]">
+          <SubmitAgentSection />
         </section>
 
         <section data-testid="builtin-agents-section" className="border-t border-white/[0.06]">
