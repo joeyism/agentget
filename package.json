@@ -1,6 +1,6 @@
 {
   "name": "agentget",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Install AI agents from GitHub repos into your project",
   "type": "module",
   "bin": {
