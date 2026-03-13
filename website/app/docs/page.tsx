@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { DocsNav } from "@/components/DocsNav";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SubmitAgentSection } from "@/components/SubmitAgentSection";
 import {
   BUILTIN_AGENTS,
   getBuiltinAgentInstallCommand,
@@ -98,6 +99,10 @@ export default function DocsPage() {
             ))}
           </div>
         </section>
+
+        <div className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8 border-t border-white/[0.06]">
+          <SubmitAgentSection />
+        </div>
       </main>
     </>
   );

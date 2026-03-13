@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { AGENT_SUBMISSION_URL } from "@/lib/github";
+
 type ActiveTab = "home" | "docs" | "audits";
 
 export interface SiteHeaderProps {
@@ -59,6 +61,14 @@ export function SiteHeader({ active, currentPath }: SiteHeaderProps) {
           >
             Audits
           </Link>
+          <a
+            href={AGENT_SUBMISSION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-emerald-300 transition-colors hover:border-emerald-300/40 hover:bg-emerald-400/15 hover:text-emerald-200"
+          >
+            Submit Agent
+          </a>
           <a
             href="https://github.com/joeyism/agentget"
             target="_blank"
