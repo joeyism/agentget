@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 interface Agent {
   key: string;
@@ -12,18 +12,19 @@ interface Agent {
   hasInstructions: boolean;
   installCommand: string;
   url: string;
+  numGhStars: number;
 }
 
 const PAGE_SIZE = 50;
 
 export function AgentsDirectory({ agents }: { agents: Agent[] }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const sorted = useMemo(
-    () => [...agents].sort((a, b) => a.name.localeCompare(b.name)),
+    () => [...agents].sort((a, b) => b.numGhStars - a.numGhStars || a.name.localeCompare(b.name)),
     [agents]
   );
 
@@ -48,17 +49,15 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
-        e.key === "/" &&
-        !["INPUT", "TEXTAREA", "SELECT"].includes(
-          (e.target as HTMLElement).tagName
-        )
+        e.key === '/' &&
+        !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)
       ) {
         e.preventDefault();
         searchRef.current?.focus();
       }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   const copyInstall = async (cmd: string, idx: number) => {
@@ -78,9 +77,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
     >
       {/* ── Heading ── */}
       <div className="flex items-baseline gap-3 mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-          Agents Directory
-        </h2>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Agents Directory</h2>
         <span className="inline-flex items-center bg-emerald-500/10 text-emerald-400 text-xs font-mono font-medium px-2.5 py-1 rounded-full ring-1 ring-emerald-500/20">
           {agents.length.toLocaleString()}
         </span>
@@ -121,9 +118,8 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         <span className="w-44 sm:w-48 shrink-0">Agent</span>
         <span className="w-40 shrink-0 hidden sm:block">Repo</span>
         <span className="flex-1 min-w-0 hidden md:block">Description</span>
-        <span className="w-32 shrink-0 text-right hidden sm:block">
-          Badges
-        </span>
+        <span className="w-20 shrink-0 text-right hidden sm:block">Stars ☆</span>
+        <span className="w-32 shrink-0 text-right hidden sm:block">Badges</span>
       </div>
 
       {/* ── Rows ── */}
@@ -165,6 +161,11 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
               <p className="flex-1 min-w-0 text-neutral-500 text-sm truncate hidden md:block">
                 {agent.shortDescription}
               </p>
+
+              {/* Stars */}
+              <span className="w-20 shrink-0 text-right text-neutral-500 text-xs font-mono tabular-nums hidden sm:block">
+                {agent.numGhStars > 0 ? agent.numGhStars.toLocaleString() : ''}
+              </span>
 
               {/* Badges */}
               <div className="w-32 shrink-0 flex items-center justify-end gap-2.5 hidden sm:flex">
@@ -222,14 +223,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                         viewBox="0 0 24 24"
                         strokeWidth="2"
                       >
-                        <rect
-                          x="9"
-                          y="9"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          ry="2"
-                        />
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                       </svg>
                       Copy
@@ -251,10 +245,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div
-          className="flex items-center justify-between mt-6 pt-5"
-          data-testid="pagination"
-        >
+        <div className="flex items-center justify-between mt-6 pt-5" data-testid="pagination">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
@@ -286,7 +277,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
       {search.trim() && filtered.length > 0 && (
         <p className="mt-3 text-xs text-neutral-600 font-mono text-center">
           {filtered.length.toLocaleString()} result
-          {filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+          {filtered.length !== 1 ? 's' : ''} for &ldquo;{search}&rdquo;
         </p>
       )}
     </section>
