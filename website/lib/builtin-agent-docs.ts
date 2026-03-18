@@ -69,7 +69,7 @@ function readBuiltinAgentDoc(agent: BuiltinAgent): BuiltinAgentDoc {
             "This builtin agent is included in agentget, but its long-form markdown source is not present in this repository snapshot. Use the summary and install command on this page as the current reference.",
         },
       ],
-      githubUrl: "https://github.com/joeyism/agentget/tree/main/agents",
+      githubUrl: "https://github.com/joeyism/agentget/tree/master/agents",
     };
   }
 
@@ -80,7 +80,7 @@ function readBuiltinAgentDoc(agent: BuiltinAgent): BuiltinAgentDoc {
     title: parseTitle(markdown),
     intro: parseIntro(markdown),
     sections: parseSections(markdown),
-    githubUrl: `https://github.com/joeyism/agentget/blob/main/agents/${agent.sourceFile}`,
+    githubUrl: `https://github.com/joeyism/agentget/blob/master/agents/${agent.sourceFile}`,
   };
 }
 
