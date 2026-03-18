@@ -56,6 +56,37 @@ npx agentget add owner/repo --agent code-reviewer --agents-only
 npx agentget add VoltAgent/awesome-claude-code-subagents --agents-dir categories
 ```
 
+## List Installed
+
+```bash
+# List installed agents (default)
+npx agentget list
+
+# List everything (agents, skills, instructions, rules)
+npx agentget list --all
+
+# List only agents
+npx agentget list --agents-only
+
+# List only skills
+npx agentget list --skills-only
+
+# List only instructions
+npx agentget list --instructions-only
+
+# List only rules
+npx agentget list --rules-only
+```
+
+| Flag                  | Behavior                     |
+| --------------------- | ---------------------------- |
+| (none)                | Lists agents only (default)  |
+| `--all`               | Lists everything             |
+| `--agents-only`       | Lists agents only (explicit) |
+| `--skills-only`       | Lists skills only            |
+| `--instructions-only` | Lists instructions only      |
+| `--rules-only`        | Lists rules only             |
+
 ## Filtering
 
 | Flag                  | Behavior                                                 |
