@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AGENTS } from '../src/agents.js';
+import { AGENTS, type ContentType } from '../src/agents.js';
 
 describe('AGENTS', () => {
   it('array length > 0', () => {
@@ -66,6 +66,36 @@ describe('AGENTS', () => {
       if (agent.isGlobal || agent.isAvailable !== undefined) {
         const path = agent.getPath(process.cwd(), 'rule', 'my-rule', '.md');
         if (path) expect(path).toContain('rules');
+      }
+    }
+  });
+
+  it('Every agent has a getDir function', () => {
+    for (const agent of AGENTS) {
+      expect(typeof agent.getDir).toBe('function');
+    }
+  });
+
+  it('Canonical agents getDir returns null', () => {
+    for (const agent of AGENTS) {
+      if (!agent.isGlobal && agent.isAvailable === undefined) {
+        expect(agent.getDir(process.cwd(), 'agent')).toBeNull();
+      }
+    }
+  });
+
+  it('Non-canonical agents getDir returns directory path for each content type', () => {
+    const types: ContentType[] = ['agent', 'instruction', 'skill', 'rule'];
+    for (const agent of AGENTS) {
+      if (agent.isGlobal || agent.isAvailable !== undefined) {
+        for (const type of types) {
+          const dir = agent.getDir(process.cwd(), type);
+          expect(typeof dir).toBe('string');
+          if (type === 'agent') expect(dir).toContain('agents');
+          if (type === 'instruction') expect(dir).toContain('instructions');
+          if (type === 'skill') expect(dir).toContain('skills');
+          if (type === 'rule') expect(dir).toContain('rules');
+        }
       }
     }
   });

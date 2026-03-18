@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { add } from './add.js';
+import { listInstalled } from './list.js';
 import { printTargets } from './targets.js';
 
 const program = new Command();
@@ -53,6 +54,37 @@ program
           skillsDir: options.skillsDir,
           instructionsDir: options.instructionsDir,
           rulesDir: options.rulesDir,
+        });
+      } catch (err) {
+        console.error(`Error: ${(err as Error).message}`);
+        process.exit(1);
+      }
+    }
+  );
+
+program
+  .command('list')
+  .description('List installed agents, skills, instructions, and rules')
+  .option('--all', 'List everything (agents, skills, instructions, rules)')
+  .option('--agents-only', 'List only agents (default)')
+  .option('--skills-only', 'List only skills')
+  .option('--instructions-only', 'List only instructions')
+  .option('--rules-only', 'List only rules')
+  .action(
+    async (options: {
+      all?: boolean;
+      agentsOnly?: boolean;
+      skillsOnly?: boolean;
+      instructionsOnly?: boolean;
+      rulesOnly?: boolean;
+    }) => {
+      try {
+        await listInstalled({
+          all: options.all,
+          agentsOnly: options.agentsOnly,
+          skillsOnly: options.skillsOnly,
+          instructionsOnly: options.instructionsOnly,
+          rulesOnly: options.rulesOnly,
         });
       } catch (err) {
         console.error(`Error: ${(err as Error).message}`);

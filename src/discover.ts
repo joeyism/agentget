@@ -1,5 +1,6 @@
-import { readdir, stat } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import { join } from 'path';
+import { exists } from './utils.js';
 
 export type ContentType = 'agent' | 'instruction' | 'skill' | 'rule';
 
@@ -43,15 +44,6 @@ export async function discoverContent(
   }
 
   return items;
-}
-
-async function exists(p: string): Promise<boolean> {
-  try {
-    await stat(p);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function scanAgents(dir: string, items: DiscoveredItem[]): Promise<void> {

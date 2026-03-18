@@ -7,6 +7,7 @@ export type ContentType = 'agent' | 'instruction' | 'skill' | 'rule';
 export interface AgentTarget {
   name: string;
   getPath: (cwd: string, type: ContentType, name: string, extension?: string) => string | null;
+  getDir: (cwd: string, type: ContentType) => string | null;
   isAvailable?: (cwd: string) => boolean;
   isGlobal: boolean;
 }
@@ -48,6 +49,7 @@ function createCanonicalTarget(name: string): AgentTarget {
     name,
     isGlobal: false,
     getPath: () => null,
+    getDir: () => null,
   };
 }
 
@@ -64,6 +66,10 @@ function createPathTarget(
     getPath: (cwd: string, type: ContentType, itemName: string, extension?: string) => {
       const basePath = getBasePath(cwd);
       return join(basePath, typeDir(type), itemName + itemExt(type, extension));
+    },
+    getDir: (cwd: string, type: ContentType) => {
+      const basePath = getBasePath(cwd);
+      return join(basePath, typeDir(type));
     },
   };
 }
