@@ -78,12 +78,6 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
       includeTypes.add('rule');
     } else if (options.agentsOnly) {
       includeTypes.add('agent');
-    } else if (options.agentFilter) {
-      // --agent with no type restriction: include all related content
-      includeTypes.add('agent');
-      includeTypes.add('skill');
-      includeTypes.add('instruction');
-      includeTypes.add('rule');
     } else {
       includeTypes.add('agent');
     }
