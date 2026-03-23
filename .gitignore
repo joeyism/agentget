@@ -7,3 +7,4 @@ dist/
 .cursor/
 website/.next/
 website/node_modules/
+website/tsconfig.tsbuildinfo

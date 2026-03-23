@@ -18,6 +18,7 @@ interface SourceEntry {
   has_instructions: boolean;
   short_description: string;
   long_description: string;
+  num_gh_stars: number;
 }
 
 interface AgentEntry {
@@ -29,8 +30,8 @@ interface AgentEntry {
   hasSkills: boolean;
   hasInstructions: boolean;
   installCommand: string;
-  starCount: number;
-  starCountLabel: string;
+  url: string;
+  numGhStars: number;
   repoUrl: string;
   sourceUrl?: string;
   sourceKind: SourceKind;
@@ -52,11 +53,6 @@ interface ParsedGitHubLink {
   hasValidSourceUrl: boolean;
   normalizedUrl: string;
   wasAmbiguous: boolean;
-}
-
-interface RepoStars {
-  starCount: number;
-  starCountLabel: string;
 }
 
 function titleCase(slug: string): string {
@@ -85,82 +81,6 @@ function sanitizeDescription(desc: string, repo: string): string {
 
 function normalizeUrl(url: string): string {
   return url.startsWith('https://') ? url : `https://${url}`;
-}
-
-function parseStarCount(value: string): number {
-  const normalized = value.trim().toLowerCase().replace(/,/g, '');
-  const match = normalized.match(/^(\d+(?:\.\d+)?)([km]?)$/);
-
-  if (!match) {
-    return 0;
-  }
-
-  const base = Number(match[1]);
-  const suffix = match[2];
-
-  if (suffix === 'm') {
-    return Math.round(base * 1_000_000);
-  }
-
-  if (suffix === 'k') {
-    return Math.round(base * 1_000);
-  }
-
-  return Math.round(base);
-}
-
-function formatStarCount(value: string): string {
-  if (!value) {
-    return '—';
-  }
-
-  const trimmed = value.trim();
-  const match = trimmed.match(/^(\d+(?:\.\d+)?)([kKmM]?)$/);
-
-  if (!match) {
-    return trimmed;
-  }
-
-  const numeric = Number(match[1]);
-  const suffix = match[2].toUpperCase();
-
-  if (!suffix) {
-    return Math.round(numeric).toLocaleString('en-US');
-  }
-
-  const abbreviated = Number.isInteger(numeric) ? numeric.toString() : numeric.toFixed(1);
-  return `${abbreviated}${suffix}`;
-}
-
-async function fetchRepoStars(repo: string): Promise<RepoStars> {
-  try {
-    const response = await fetch(`https://img.shields.io/github/stars/${repo}.json`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch stars for ${repo}`);
-    }
-
-    const payload = (await response.json()) as { value?: string };
-    const rawValue = payload.value ?? '';
-
-    return {
-      starCount: parseStarCount(rawValue),
-      starCountLabel: formatStarCount(rawValue),
-    };
-  } catch {
-    return {
-      starCount: 0,
-      starCountLabel: '—',
-    };
-  }
-}
-
-async function buildRepoStarsMap(repos: string[]): Promise<Map<string, RepoStars>> {
-  const starsEntries = await Promise.all(
-    repos.map(async (repo) => [repo, await fetchRepoStars(repo)] as const)
-  );
-
-  return new Map(starsEntries);
 }
 
 function parseGitHubLink(rawUrl: string, owner: string, repoName: string): ParsedGitHubLink {
@@ -264,7 +184,7 @@ function buildSupportedTargets(): SupportedTargetEntry[] {
   });
 }
 
-async function main(): Promise<void> {
+function main(): void {
   const rootDir = resolve(__dirname, '..');
   const sourcePath = resolve(rootDir, 'sources.json');
   const outputPath = resolve(rootDir, 'public', 'agents-index.json');
@@ -277,10 +197,6 @@ async function main(): Promise<void> {
   const keys = Object.keys(sources);
   console.log(`Found ${keys.length} entries`);
 
-  const uniqueRepos = [...new Set(keys.map((key) => key.split('/').slice(0, 2).join('/')))];
-  console.log(`Fetching stars for ${uniqueRepos.length} unique repos...`);
-  const repoStars = await buildRepoStarsMap(uniqueRepos);
-
   const agents: AgentEntry[] = keys.map((key) => {
     const entry = sources[key];
     const segments = key.split('/');
@@ -289,7 +205,6 @@ async function main(): Promise<void> {
     const repo = `${owner}/${repoName}`;
     const agentSlug = segments[2];
     const githubLink = parseGitHubLink(entry.url, owner, repoName);
-    const stars = repoStars.get(repo) ?? { starCount: 0, starCountLabel: '—' };
 
     return {
       key,
@@ -300,8 +215,8 @@ async function main(): Promise<void> {
       hasSkills: entry.has_skills,
       hasInstructions: entry.has_instructions,
       installCommand: entry.installation_method,
-      starCount: stars.starCount,
-      starCountLabel: stars.starCountLabel,
+      url: githubLink.sourceUrl ?? githubLink.repoUrl,
+      numGhStars: entry.num_gh_stars ?? 0,
       repoUrl: githubLink.repoUrl,
       sourceUrl: githubLink.sourceUrl,
       sourceKind: githubLink.sourceKind,
@@ -382,4 +297,4 @@ async function main(): Promise<void> {
   console.log('\nAll checks passed.');
 }
 
-void main();
+main();

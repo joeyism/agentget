@@ -11,8 +11,8 @@ export interface ExternalAgent {
   hasSkills: boolean;
   hasInstructions: boolean;
   installCommand: string;
-  starCount: number;
-  starCountLabel: string;
+  url: string;
+  numGhStars: number;
   repoUrl: string;
   sourceUrl?: string;
   sourceKind: string;

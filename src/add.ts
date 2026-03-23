@@ -76,11 +76,8 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
       includeTypes.add('instruction');
     } else if (options.rulesOnly) {
       includeTypes.add('rule');
-    } else if (options.agentFilter) {
+    } else if (options.agentsOnly) {
       includeTypes.add('agent');
-      includeTypes.add('skill');
-      includeTypes.add('instruction');
-      includeTypes.add('rule');
     } else {
       includeTypes.add('agent');
     }

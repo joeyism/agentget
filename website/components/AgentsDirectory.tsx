@@ -12,8 +12,8 @@ interface Agent {
   hasSkills: boolean;
   hasInstructions: boolean;
   installCommand: string;
-  starCount: number;
-  starCountLabel: string;
+  url: string;
+  numGhStars: number;
   repoUrl: string;
   sourceUrl?: string;
   sourceKind: string;
@@ -34,7 +34,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const sorted = useMemo(
-    () => [...agents].sort((a, b) => b.starCount - a.starCount || a.name.localeCompare(b.name)),
+    () => [...agents].sort((a, b) => b.numGhStars - a.numGhStars || a.name.localeCompare(b.name)),
     [agents]
   );
 
@@ -101,7 +101,6 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
       data-testid="agents-directory"
       className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20"
     >
-      {/* ── Heading ── */}
       <div className="flex items-baseline gap-3 mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Agents Directory</h2>
         <span className="inline-flex items-center bg-emerald-500/10 text-emerald-400 text-xs font-mono font-medium px-2.5 py-1 rounded-full ring-1 ring-emerald-500/20">
@@ -109,9 +108,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         </span>
       </div>
 
-      {/* ── Search ── */}
       <div className="relative mb-6">
-        {/* Magnifying glass */}
         <svg
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600"
           fill="none"
@@ -138,7 +135,6 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         </kbd>
       </div>
 
-      {/* ── Table header ── */}
       <div className="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-wider text-neutral-600 font-medium border-b border-white/[0.08] select-none">
         <span className="w-10 shrink-0 text-right">#</span>
         <span className="w-36 sm:w-48 shrink-0">Agent</span>
@@ -148,7 +144,6 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         <span className="w-44 shrink-0 text-right hidden sm:block">Actions</span>
       </div>
 
-      {/* ── Rows ── */}
       <div data-testid="agents-table-body" role="list">
         {rows.map((agent, i) => {
           const globalIdx = (page - 1) * PAGE_SIZE + i;
@@ -165,12 +160,10 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
             >
               <div className="px-4 py-3 hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-start gap-3">
-                  {/* Rank */}
                   <span className="w-10 shrink-0 text-right text-neutral-600 text-sm font-mono tabular-nums pt-0.5">
                     {globalIdx + 1}
                   </span>
 
-                  {/* Name */}
                   <div className="w-36 sm:w-48 shrink-0 min-w-0">
                     <Link
                       href={getExternalAgentHref(agent.key)}
@@ -183,7 +176,6 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                     </span>
                   </div>
 
-                  {/* Repo */}
                   <span className="w-40 shrink-0 text-neutral-500 text-xs font-mono truncate hidden sm:block pt-0.5">
                     {agent.repo}
                   </span>
@@ -195,10 +187,9 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                     className="hidden lg:block w-24 shrink-0 pt-0.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors font-mono tabular-nums"
                     aria-label={`View stars for ${agent.repo}`}
                   >
-                    {agent.starCountLabel}
+                    {agent.numGhStars > 0 ? agent.numGhStars.toLocaleString() : ''}
                   </a>
 
-                  {/* Description */}
                   <div className="flex-1 min-w-0 pt-0.5">
                     <p className="text-neutral-500 text-sm truncate">{agent.shortDescription}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
@@ -325,14 +316,12 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         })}
       </div>
 
-      {/* ── Empty state ── */}
       {filtered.length === 0 && (
         <div className="text-center py-20 text-neutral-600 text-sm">
           No agents found for &ldquo;{search}&rdquo;
         </div>
       )}
 
-      {/* ── Pagination ── */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-6 pt-5" data-testid="pagination">
           <button
@@ -362,7 +351,6 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
         </div>
       )}
 
-      {/* ── Search result count ── */}
       {search.trim() && filtered.length > 0 && (
         <p className="mt-3 text-xs text-neutral-600 font-mono text-center">
           {filtered.length.toLocaleString()} result
