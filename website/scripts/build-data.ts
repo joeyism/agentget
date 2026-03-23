@@ -7,8 +7,6 @@ import { AGENTS } from '../../src/agents';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const DESC_MAX_LENGTH = 200;
-
 interface SourceEntry {
   url: string;
   installation_method: string;
@@ -45,16 +43,13 @@ function titleCase(slug: string): string {
 
 function sanitizeDescription(desc: string, repo: string): string {
   let cleaned = desc.trim();
+
   if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
     cleaned = cleaned.slice(1, -1).trim();
   }
 
   if (cleaned.length < 10) {
     return `Agent from ${repo}`;
-  }
-
-  if (cleaned.length > DESC_MAX_LENGTH) {
-    cleaned = cleaned.slice(0, DESC_MAX_LENGTH).trimEnd() + '...';
   }
 
   return cleaned;
@@ -132,9 +127,10 @@ function main(): void {
 
   const hasLongDesc = output.includes('long_description');
   const wrappedQuotes = agents.filter(
-    (a) => a.shortDescription.startsWith('"') && a.shortDescription.endsWith('"')
+    (agent) => agent.shortDescription.startsWith('"') && agent.shortDescription.endsWith('"')
   ).length;
-  const missingHttps = agents.filter((a) => !a.url.startsWith('https://')).length;
+  const missingHttps = agents.filter((agent) => !agent.url.startsWith('https://')).length;
+  const missingStars = agents.filter((agent) => agent.numGhStars <= 0).length;
   const duplicateSupportedTargets =
     supportedTargets.length !== new Set(supportedTargets.map((target) => target.name)).size;
 
@@ -143,6 +139,7 @@ function main(): void {
   console.log(`Contains long_description: ${hasLongDesc}`);
   console.log(`Wrapped quotes remaining: ${wrappedQuotes}`);
   console.log(`URLs missing https://: ${missingHttps}`);
+  console.log(`Entries missing stars: ${missingStars}`);
   console.log(`Duplicate supported targets: ${duplicateSupportedTargets}`);
 
   const failed =
