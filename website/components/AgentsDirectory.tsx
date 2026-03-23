@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import Link from 'next/link';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 interface Agent {
   key: string;
@@ -11,19 +12,29 @@ interface Agent {
   hasSkills: boolean;
   hasInstructions: boolean;
   installCommand: string;
-  url: string;
+  starCount: number;
+  starCountLabel: string;
+  repoUrl: string;
+  sourceUrl?: string;
+  sourceKind: string;
+  hasValidSourceUrl: boolean;
 }
 
 const PAGE_SIZE = 50;
 
+function getExternalAgentHref(key: string) {
+  return `/agents/${key}`;
+}
+
 export function AgentsDirectory({ agents }: { agents: Agent[] }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const sorted = useMemo(
-    () => [...agents].sort((a, b) => a.name.localeCompare(b.name)),
+    () => [...agents].sort((a, b) => b.starCount - a.starCount || a.name.localeCompare(b.name)),
     [agents]
   );
 
@@ -43,33 +54,47 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
 
   useEffect(() => {
     setPage(1);
+    setExpandedKey(null);
   }, [search]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
-        e.key === "/" &&
-        !["INPUT", "TEXTAREA", "SELECT"].includes(
-          (e.target as HTMLElement).tagName
-        )
+        e.key === '/' &&
+        !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)
       ) {
         e.preventDefault();
         searchRef.current?.focus();
       }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const copyInstall = async (cmd: string, idx: number) => {
+  const copyInstall = async (cmd: string, key: string) => {
     try {
       await navigator.clipboard.writeText(cmd);
-      setCopiedIdx(idx);
-      setTimeout(() => setCopiedIdx(null), 2000);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
     } catch {
       void 0;
     }
   };
+
+  const renderBadges = (agent: Agent) => (
+    <>
+      {agent.hasSkills && (
+        <span className="text-[11px] text-emerald-400/70 font-mono whitespace-nowrap">
+          ✓ skills
+        </span>
+      )}
+      {agent.hasInstructions && (
+        <span className="text-[11px] text-emerald-400/70 font-mono whitespace-nowrap">
+          ✓ instructions
+        </span>
+      )}
+    </>
+  );
 
   return (
     <section
@@ -78,9 +103,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
     >
       {/* ── Heading ── */}
       <div className="flex items-baseline gap-3 mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-          Agents Directory
-        </h2>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Agents Directory</h2>
         <span className="inline-flex items-center bg-emerald-500/10 text-emerald-400 text-xs font-mono font-medium px-2.5 py-1 rounded-full ring-1 ring-emerald-500/20">
           {agents.length.toLocaleString()}
         </span>
@@ -118,124 +141,184 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
       {/* ── Table header ── */}
       <div className="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-wider text-neutral-600 font-medium border-b border-white/[0.08] select-none">
         <span className="w-10 shrink-0 text-right">#</span>
-        <span className="w-44 sm:w-48 shrink-0">Agent</span>
+        <span className="w-36 sm:w-48 shrink-0">Agent</span>
         <span className="w-40 shrink-0 hidden sm:block">Repo</span>
-        <span className="flex-1 min-w-0 hidden md:block">Description</span>
-        <span className="w-32 shrink-0 text-right hidden sm:block">
-          Badges
-        </span>
+        <span className="w-24 shrink-0 hidden lg:block">Stars ☆</span>
+        <span className="flex-1 min-w-0">Description</span>
+        <span className="w-44 shrink-0 text-right hidden sm:block">Actions</span>
       </div>
 
       {/* ── Rows ── */}
       <div data-testid="agents-table-body" role="list">
         {rows.map((agent, i) => {
           const globalIdx = (page - 1) * PAGE_SIZE + i;
-          const isCopied = copiedIdx === globalIdx;
+          const isCopied = copiedKey === agent.key;
+          const isExpanded = expandedKey === agent.key;
+          const detailsId = `agent-description-${agent.key.replace(/[^a-zA-Z0-9-_]/g, '-')}`;
 
           return (
             <div
               key={agent.key}
               role="listitem"
               data-testid="agent-row"
-              className="group relative flex items-center gap-3 px-4 py-3 border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
+              className="border-b border-white/[0.04]"
             >
-              {/* Rank */}
-              <span className="w-10 shrink-0 text-right text-neutral-600 text-sm font-mono tabular-nums">
-                {globalIdx + 1}
-              </span>
-
-              {/* Name */}
-              <div className="w-44 sm:w-48 shrink-0 min-w-0">
-                <a
-                  href={agent.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-sm text-neutral-200 hover:text-white transition-colors truncate block"
-                >
-                  {agent.name}
-                </a>
-              </div>
-
-              {/* Repo */}
-              <span className="w-40 shrink-0 text-neutral-500 text-xs font-mono truncate hidden sm:block">
-                {agent.repo}
-              </span>
-
-              {/* Description */}
-              <p className="flex-1 min-w-0 text-neutral-500 text-sm truncate hidden md:block">
-                {agent.shortDescription}
-              </p>
-
-              {/* Badges */}
-              <div className="w-32 shrink-0 flex items-center justify-end gap-2.5 hidden sm:flex">
-                {agent.hasSkills && (
-                  <span className="text-[11px] text-emerald-400/70 font-mono whitespace-nowrap">
-                    ✓ skills
+              <div className="px-4 py-3 hover:bg-white/[0.02] transition-colors">
+                <div className="flex items-start gap-3">
+                  {/* Rank */}
+                  <span className="w-10 shrink-0 text-right text-neutral-600 text-sm font-mono tabular-nums pt-0.5">
+                    {globalIdx + 1}
                   </span>
-                )}
-                {agent.hasInstructions && (
-                  <span className="text-[11px] text-emerald-400/70 font-mono whitespace-nowrap">
-                    ✓ instructions
-                  </span>
-                )}
-              </div>
 
-              {/* ── Hover overlay: install command ── */}
-              <div className="absolute inset-0 items-center gap-3 px-4 bg-neutral-950/95 backdrop-blur-sm border-b border-white/[0.04] hidden group-hover:flex">
-                <span className="w-10 shrink-0 text-right text-neutral-600 text-sm font-mono tabular-nums">
-                  {globalIdx + 1}
-                </span>
-                <code className="text-xs text-neutral-400 font-mono truncate flex-1 min-w-0">
-                  <span className="text-neutral-600">$ </span>
-                  {agent.installCommand}
-                </code>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyInstall(agent.installCommand, globalIdx);
-                  }}
-                  className="shrink-0 inline-flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-mono px-3 py-1.5 rounded-md ring-1 ring-white/[0.06] transition-colors cursor-pointer"
-                >
-                  {isCopied ? (
-                    <>
-                      <svg
-                        className="w-3.5 h-3.5 text-emerald-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
+                  {/* Name */}
+                  <div className="w-36 sm:w-48 shrink-0 min-w-0">
+                    <Link
+                      href={getExternalAgentHref(agent.key)}
+                      className="font-semibold text-sm text-neutral-200 hover:text-white transition-colors truncate block"
+                    >
+                      {agent.name}
+                    </Link>
+                    <span className="mt-1 block text-[11px] text-neutral-600 font-mono truncate sm:hidden">
+                      {agent.repo}
+                    </span>
+                  </div>
+
+                  {/* Repo */}
+                  <span className="w-40 shrink-0 text-neutral-500 text-xs font-mono truncate hidden sm:block pt-0.5">
+                    {agent.repo}
+                  </span>
+
+                  <a
+                    href={`${agent.repoUrl}/stargazers`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden lg:block w-24 shrink-0 pt-0.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors font-mono tabular-nums"
+                    aria-label={`View stars for ${agent.repo}`}
+                  >
+                    {agent.starCountLabel}
+                  </a>
+
+                  {/* Description */}
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <p className="text-neutral-500 text-sm truncate">{agent.shortDescription}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
+                      {renderBadges(agent)}
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 flex flex-col items-end gap-2 sm:w-44">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <button
+                        onClick={() => copyInstall(agent.installCommand, agent.key)}
+                        className="inline-flex items-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-mono px-3 py-1.5 rounded-md ring-1 ring-white/[0.06] transition-colors cursor-pointer"
+                        aria-label={`Copy install command for ${agent.name}`}
                       >
-                        <polyline
-                          points="20 6 9 17 4 12"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
+                        {isCopied ? (
+                          <>
+                            <svg
+                              className="w-3.5 h-3.5 text-emerald-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                            >
+                              <polyline
+                                points="20 6 9 17 4 12"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                            >
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            Copy
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          setExpandedKey((current) => (current === agent.key ? null : agent.key))
+                        }
+                        className="inline-flex items-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-mono px-3 py-1.5 rounded-md ring-1 ring-white/[0.06] transition-colors cursor-pointer"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailsId}
                       >
-                        <rect
-                          x="9"
-                          y="9"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          ry="2"
-                        />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                      Copy
-                    </>
-                  )}
-                </button>
+                        <svg
+                          className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                        >
+                          <polyline
+                            points="9 18 15 12 9 6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        {isExpanded ? 'Less' : 'More'}
+                      </button>
+                    </div>
+
+                    <div className="hidden md:flex flex-wrap items-center justify-end gap-2.5">
+                      {renderBadges(agent)}
+                    </div>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div
+                    id={detailsId}
+                    className="mt-3 ml-[3.25rem] rounded-lg border border-white/[0.06] bg-neutral-950/60 px-4 py-3 sm:ml-0 sm:pl-14"
+                  >
+                    <p className="text-[11px] uppercase tracking-wider text-neutral-600 font-medium mb-2">
+                      Full description
+                    </p>
+                    <p className="text-sm leading-6 text-neutral-300 whitespace-pre-wrap break-words">
+                      {agent.shortDescription}
+                    </p>
+                    <div className="mt-3 rounded-md border border-white/[0.05] bg-black/20 px-3 py-2">
+                      <code className="text-xs text-neutral-400 font-mono break-all">
+                        <span className="text-neutral-600">$ </span>
+                        {agent.installCommand}
+                      </code>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-mono">
+                      <a
+                        href={agent.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-neutral-400 hover:text-white transition-colors"
+                      >
+                        Open repo ↗
+                      </a>
+                      {agent.hasValidSourceUrl &&
+                        agent.sourceUrl &&
+                        agent.sourceKind !== 'repo' && (
+                          <a
+                            href={agent.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-400 hover:text-white transition-colors"
+                          >
+                            View source ↗
+                          </a>
+                        )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -251,10 +334,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div
-          className="flex items-center justify-between mt-6 pt-5"
-          data-testid="pagination"
-        >
+        <div className="flex items-center justify-between mt-6 pt-5" data-testid="pagination">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
@@ -286,7 +366,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
       {search.trim() && filtered.length > 0 && (
         <p className="mt-3 text-xs text-neutral-600 font-mono text-center">
           {filtered.length.toLocaleString()} result
-          {filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+          {filtered.length !== 1 ? 's' : ''} for &ldquo;{search}&rdquo;
         </p>
       )}
     </section>
