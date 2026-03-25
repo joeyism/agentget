@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface Agent {
@@ -13,12 +14,20 @@ interface Agent {
   installCommand: string;
   url: string;
   numGhStars: number;
+  repoUrl: string;
+  sourceUrl?: string;
+  sourceKind: string;
+  hasValidSourceUrl: boolean;
 }
 
 const PAGE_SIZE = 50;
 
 function formatStars(count: number): string {
   return count > 0 ? count.toLocaleString() : '—';
+}
+
+function getExternalAgentHref(key: string) {
+  return `/agents/${key}`;
 }
 
 export function AgentsDirectory({ agents }: { agents: Agent[] }) {
@@ -162,14 +171,12 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                   </span>
 
                   <div className="w-36 min-w-0 shrink-0 sm:w-48">
-                    <a
-                      href={agent.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href={getExternalAgentHref(agent.key)}
                       className="block truncate text-sm font-semibold text-neutral-200 transition-colors hover:text-white"
                     >
                       {agent.name}
-                    </a>
+                    </Link>
                     <span className="mt-1 block truncate font-mono text-[11px] text-neutral-600 sm:hidden">
                       {agent.repo}
                     </span>
@@ -189,9 +196,15 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                     </div>
                   </div>
 
-                  <div className="hidden w-24 shrink-0 pt-0.5 text-right font-mono text-xs text-neutral-400 sm:block">
+                  <a
+                    href={`${agent.repoUrl}/stargazers`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden w-24 shrink-0 pt-0.5 text-right font-mono text-xs text-neutral-400 transition-colors hover:text-neutral-300 sm:block"
+                    aria-label={`View stars for ${agent.repo}`}
+                  >
                     {formatStars(agent.numGhStars)}
-                  </div>
+                  </a>
 
                   <div className="shrink-0 sm:w-44">
                     <div className="flex flex-wrap justify-end gap-2">
@@ -289,14 +302,32 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-xs">
+                      <Link
+                        href={getExternalAgentHref(agent.key)}
+                        className="text-neutral-400 transition-colors hover:text-white"
+                      >
+                        Open details →
+                      </Link>
                       <a
-                        href={agent.url}
+                        href={agent.repoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-neutral-400 transition-colors hover:text-white"
                       >
-                        Open repo ↗
+                        Open repository ↗
                       </a>
+                      {agent.hasValidSourceUrl &&
+                        agent.sourceUrl &&
+                        agent.sourceKind !== 'repo' && (
+                          <a
+                            href={agent.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-400 transition-colors hover:text-white"
+                          >
+                            View source ↗
+                          </a>
+                        )}
                     </div>
                   </div>
                 )}
