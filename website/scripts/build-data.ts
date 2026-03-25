@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { AGENTS } from '../../src/agents';
@@ -64,6 +64,7 @@ function titleCase(slug: string): string {
 
 function sanitizeDescription(desc: string, repo: string): string {
   let cleaned = desc.trim();
+
   if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
     cleaned = cleaned.slice(1, -1).trim();
   }
@@ -73,7 +74,7 @@ function sanitizeDescription(desc: string, repo: string): string {
   }
 
   if (cleaned.length > DESC_MAX_LENGTH) {
-    cleaned = cleaned.slice(0, DESC_MAX_LENGTH).trimEnd() + '...';
+    cleaned = `${cleaned.slice(0, DESC_MAX_LENGTH).trimEnd()}...`;
   }
 
   return cleaned;
@@ -243,14 +244,16 @@ function main(): void {
 
   const hasLongDesc = output.includes('long_description');
   const wrappedQuotes = agents.filter(
-    (a) => a.shortDescription.startsWith('"') && a.shortDescription.endsWith('"')
+    (agent) => agent.shortDescription.startsWith('"') && agent.shortDescription.endsWith('"')
   ).length;
+  const missingHttps = agents.filter((agent) => !agent.url.startsWith('https://')).length;
+  const missingStars = agents.filter((agent) => agent.numGhStars <= 0).length;
   const invalidRepoUrls = agents.filter(
-    (a) => !/^https:\/\/github\.com\/[^/]+\/[^/]+$/.test(a.repoUrl)
+    (agent) => !/^https:\/\/github\.com\/[^/]+\/[^/]+$/.test(agent.repoUrl)
   ).length;
-  const validRepoLinks = agents.filter((a) => a.sourceKind === 'repo').length;
-  const validFileLinks = agents.filter((a) => a.sourceKind === 'file').length;
-  const validFolderLinks = agents.filter((a) => a.sourceKind === 'folder').length;
+  const validRepoLinks = agents.filter((agent) => agent.sourceKind === 'repo').length;
+  const validFileLinks = agents.filter((agent) => agent.sourceKind === 'file').length;
+  const validFolderLinks = agents.filter((agent) => agent.sourceKind === 'folder').length;
   const ambiguousGitHubPaths = keys
     .map((key) => {
       const segments = key.split('/');
@@ -267,6 +270,8 @@ function main(): void {
   console.log(`Entries: ${agents.length}`);
   console.log(`Contains long_description: ${hasLongDesc}`);
   console.log(`Wrapped quotes remaining: ${wrappedQuotes}`);
+  console.log(`URLs missing https://: ${missingHttps}`);
+  console.log(`Entries missing stars: ${missingStars}`);
   console.log(`Invalid repo URLs: ${invalidRepoUrls}`);
   console.log(`Valid repo links: ${validRepoLinks}`);
   console.log(`Valid file links: ${validFileLinks}`);
@@ -278,6 +283,7 @@ function main(): void {
   const failed =
     hasLongDesc ||
     wrappedQuotes > 0 ||
+    missingHttps > 0 ||
     invalidRepoUrls > 0 ||
     invalidGeneratedSourceUrls > 0 ||
     agents.length !== keys.length ||
