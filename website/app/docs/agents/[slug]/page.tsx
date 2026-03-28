@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
-import { DocsNav } from "@/components/DocsNav";
-import { SiteHeader } from "@/components/SiteHeader";
-import { getBuiltinAgentDoc, getBuiltinAgentDocs } from "@/lib/builtin-agent-docs";
-import { getBuiltinAgentInstallCommand } from "@/lib/builtin-agents";
+import { DocsNav } from '@/components/DocsNav';
+import { SiteHeader } from '@/components/SiteHeader';
+import { getBuiltinAgentDoc, getBuiltinAgentDocs } from '@/lib/builtin-agent-docs';
+import { getBuiltinAgentInstallCommand } from '@/lib/builtin-agents';
 
 type AgentDocPageProps = {
   params: Promise<{
@@ -19,21 +19,27 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({
-  params,
-}: AgentDocPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: AgentDocPageProps): Promise<Metadata> {
   const { slug } = await params;
   const agent = getBuiltinAgentDoc(slug);
 
   if (!agent) {
     return {
-      title: "Agent Docs | agentget",
+      title: 'Agent Docs | agentget',
     };
   }
 
   return {
-    title: `${agent.name} | agentget docs`,
-    description: agent.summary,
+    title: `${agent.name} — AI Agent Documentation`,
+    description: `${agent.summary} Learn how to install and use the ${agent.name} agent with agentget.`,
+    alternates: { canonical: `https://agentget.sh/docs/agents/${slug}` },
+    openGraph: {
+      title: `${agent.name} Agent Docs | agentget`,
+      description: agent.summary,
+      url: `https://agentget.sh/docs/agents/${slug}`,
+      siteName: 'agentget',
+      type: 'article',
+    },
   };
 }
 
@@ -45,9 +51,7 @@ export default async function AgentDocPage({ params }: AgentDocPageProps) {
     notFound();
   }
 
-  const otherAgents = getBuiltinAgentDocs().filter(
-    (candidate) => candidate.slug !== agent.slug
-  );
+  const otherAgents = getBuiltinAgentDocs().filter((candidate) => candidate.slug !== agent.slug);
 
   return (
     <>
@@ -70,12 +74,8 @@ export default async function AgentDocPage({ params }: AgentDocPageProps) {
 
         <section className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-400">
-              {agent.category}
-            </p>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              {agent.title}
-            </h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-emerald-400">{agent.category}</p>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">{agent.title}</h1>
             <p className="mt-5 text-base leading-8 text-neutral-300 sm:text-lg">
               {agent.intro || agent.summary}
             </p>
@@ -86,9 +86,7 @@ export default async function AgentDocPage({ params }: AgentDocPageProps) {
                   key={section.title}
                   className="rounded-2xl border border-white/[0.06] bg-neutral-950 p-6"
                 >
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {section.title}
-                  </h2>
+                  <h2 className="text-2xl font-semibold tracking-tight">{section.title}</h2>
                   <pre className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-neutral-300 font-sans overflow-x-auto">
                     {section.body}
                   </pre>

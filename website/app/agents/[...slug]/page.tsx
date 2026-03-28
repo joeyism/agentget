@@ -11,6 +11,12 @@ type ExternalAgentPageProps = {
   }>;
 };
 
+export async function generateStaticParams() {
+  return getExternalAgents().map((agent) => ({
+    slug: agent.key.split('/'),
+  }));
+}
+
 export async function generateMetadata({ params }: ExternalAgentPageProps): Promise<Metadata> {
   const { slug } = await params;
   const agent = getExternalAgent(slug);
@@ -22,8 +28,21 @@ export async function generateMetadata({ params }: ExternalAgentPageProps): Prom
   }
 
   return {
-    title: `${agent.name} | agentget`,
-    description: agent.shortDescription,
+    title: `${agent.name} — AI Agent`,
+    description: `Install the ${agent.name} AI agent. ${agent.shortDescription}`,
+    alternates: { canonical: `https://agentget.sh/agents/${slug.join('/')}` },
+    openGraph: {
+      title: `${agent.name} — AI Agent | agentget`,
+      description: agent.shortDescription,
+      url: `https://agentget.sh/agents/${slug.join('/')}`,
+      siteName: 'agentget',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${agent.name} — AI Agent | agentget`,
+      description: agent.shortDescription,
+    },
   };
 }
 
@@ -42,6 +61,25 @@ export default async function ExternalAgentPage({ params }: ExternalAgentPagePro
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: agent.name,
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Any',
+            description: agent.shortDescription,
+            url: `https://agentget.sh/agents/${agent.key}`,
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+            },
+          }),
+        }}
+      />
       <SiteHeader currentPath={`/agents/${slug.join('/')}`} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
