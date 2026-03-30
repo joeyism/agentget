@@ -1,17 +1,16 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
-import { DocsNav } from "@/components/DocsNav";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SubmitAgentSection } from "@/components/SubmitAgentSection";
-import {
-  BUILTIN_AGENTS,
-  getBuiltinAgentInstallCommand,
-} from "@/lib/builtin-agents";
+import { DocsNav } from '@/components/DocsNav';
+import { SiteHeader } from '@/components/SiteHeader';
+import { SubmitAgentSection } from '@/components/SubmitAgentSection';
+import { BUILTIN_AGENTS, getBuiltinAgentInstallCommand } from '@/lib/builtin-agents';
 
 export const metadata: Metadata = {
-  title: "Docs | agentget",
-  description: "Documentation for agentget and its builtin agents.",
+  title: 'Documentation — AI Agent Installation & Management',
+  description:
+    'Learn how to install and manage AI agents with agentget. Browse curated agents for planning, execution, orchestration, and code review.',
+  alternates: { canonical: 'https://agentget.sh/docs' },
 };
 
 const featuredAgents = BUILTIN_AGENTS.slice(0, 3);
@@ -25,17 +24,14 @@ export default function DocsPage() {
         <DocsNav active="overview" />
 
         <section className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">
-            Documentation
-          </p>
+          <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">Documentation</p>
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Install and understand the builtin agents.
           </h1>
           <p className="mt-5 text-base leading-7 text-neutral-400 sm:text-lg">
-            agentget ships with curated agents for planning, execution,
-            orchestration, research, and review. Use the docs to pick the right
-            agent, copy the install command, and read the full source-backed
-            behavior for each one.
+            agentget ships with curated agents for planning, execution, orchestration, research, and
+            review. Use the docs to pick the right agent, copy the install command, and read the
+            full source-backed behavior for each one.
           </p>
         </section>
 
@@ -43,24 +39,23 @@ export default function DocsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-neutral-950 p-6">
             <h2 className="text-lg font-semibold">What builtin agents are</h2>
             <p className="mt-3 text-sm leading-7 text-neutral-400">
-              Versioned agent definitions maintained in this repo. Each one has a
-              clear role, operating constraints, and guidance for when to use it.
+              Versioned agent definitions maintained in this repo. Each one has a clear role,
+              operating constraints, and guidance for when to use it.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/[0.06] bg-neutral-950 p-6">
             <h2 className="text-lg font-semibold">Getting started</h2>
             <pre className="mt-3 overflow-x-auto rounded-xl border border-white/[0.06] bg-black/30 p-4 text-sm text-neutral-200">
-              <code>{getBuiltinAgentInstallCommand("atlas")}</code>
+              <code>{getBuiltinAgentInstallCommand('atlas')}</code>
             </pre>
           </div>
 
           <div className="rounded-2xl border border-white/[0.06] bg-neutral-950 p-6">
             <h2 className="text-lg font-semibold">Docs coverage</h2>
             <p className="mt-3 text-sm leading-7 text-neutral-400">
-              Browse an agent index at <code>/docs/agents</code>, then open each
-              agent page for the full markdown-backed role definition and usage
-              guidance.
+              Browse an agent index at <code>/docs/agents</code>, then open each agent page for the
+              full markdown-backed role definition and usage guidance.
             </p>
           </div>
         </section>
@@ -92,9 +87,7 @@ export default function DocsPage() {
                   {agent.category}
                 </p>
                 <h3 className="mt-3 text-lg font-semibold">{agent.name}</h3>
-                <p className="mt-3 text-sm leading-7 text-neutral-400">
-                  {agent.summary}
-                </p>
+                <p className="mt-3 text-sm leading-7 text-neutral-400">{agent.summary}</p>
               </Link>
             ))}
           </div>

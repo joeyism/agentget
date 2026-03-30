@@ -1,13 +1,19 @@
-"use client";
+import { Metadata } from 'next';
+import { AgentsDirectory } from '@/components/AgentsDirectory';
+import { BuiltinAgents } from '@/components/BuiltinAgents';
+import { DocsSection } from '@/components/DocsSection';
+import { SiteHeader } from '@/components/SiteHeader';
+import { SubmitAgentSection } from '@/components/SubmitAgentSection';
+import { SupportedTargetsMarquee } from '@/components/SupportedTargetsMarquee';
+import { HeroCopyButton } from '@/components/HeroCopyButton';
+import { getExternalAgents } from '@/lib/external-agents';
 
-import { useState } from "react";
-import { AgentsDirectory } from "@/components/AgentsDirectory";
-import { BuiltinAgents } from "@/components/BuiltinAgents";
-import { DocsSection } from "@/components/DocsSection";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SubmitAgentSection } from "@/components/SubmitAgentSection";
-import { SupportedTargetsMarquee } from "@/components/SupportedTargetsMarquee";
-import agentsData from "@/public/agents-index.json";
+export const metadata: Metadata = {
+  title: 'agentget — AI Agent Directory & Package Manager',
+  description:
+    'Browse and install AI agents from GitHub. The open-source package manager for AI coding agents, skills, and instructions. Supports Claude Code, Cursor, OpenCode, and 38 more tools.',
+  alternates: { canonical: 'https://agentget.sh' },
+};
 
 const ASCII_ART = ` █████╗  ██████╗ ███████╗███╗   ██╗████████╗███████╗
 ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝██╔════╝
@@ -17,18 +23,30 @@ const ASCII_ART = ` █████╗  ██████╗ ██████
 ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝`;
 
 export default function Home() {
-  const [copied, setCopied] = useState(false);
+  const allAgents = getExternalAgents();
 
-  const copyCommand = async () => {
-    try {
-      await navigator.clipboard.writeText("npx agentget add <owner/repo>");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
+  // Sort and slice the top 50 agents for initial SSR
+  const top50Agents = [...allAgents].sort((a, b) => b.numGhStars - a.numGhStars).slice(0, 50);
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'agentget',
+            url: 'https://agentget.sh',
+            description: 'The AI Agents Package Manager',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://agentget.sh/?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
+          }),
+        }}
+      />
       <SiteHeader active="home" />
 
       <main>
@@ -48,58 +66,18 @@ export default function Home() {
                   The AI Agents Package Manager
                 </h1>
                 <p className="mt-4 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-lg">
-                  Install AI agents, instructions, skills, and rules from
-                  GitHub repos into your project with a single command.
+                  Install AI agents, instructions, skills, and rules from GitHub repos into your
+                  project with a single command.
                 </p>
               </div>
 
-              <div
-                className="group flex items-center gap-3 bg-neutral-900 border border-white/[0.08] rounded-xl px-5 py-3.5 w-fit cursor-pointer hover:border-white/[0.14] focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none transition-colors"
-                onClick={copyCommand}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && copyCommand()}
-              >
-                <code className="font-mono text-sm text-neutral-300 whitespace-nowrap">
-                  <span className="text-neutral-600">$ </span>
-                  npx agentget add &lt;owner/repo&gt;
-                </code>
-                <span className="text-neutral-600 group-hover:text-neutral-400 transition-colors shrink-0">
-                  {copied ? (
-                    <svg
-                      className="w-4 h-4 text-emerald-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                    >
-                      <polyline
-                        points="20 6 9 17 4 12"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                    >
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                  )}
-                </span>
-              </div>
+              <HeroCopyButton />
             </div>
           </div>
-
         </section>
 
         <section className="border-t border-white/[0.06]">
-          <AgentsDirectory agents={agentsData} />
+          <AgentsDirectory initialAgents={top50Agents} />
         </section>
 
         <section className="border-t border-white/[0.06]">

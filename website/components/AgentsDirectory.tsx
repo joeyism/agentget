@@ -30,12 +30,23 @@ function getExternalAgentHref(key: string) {
   return `/agents/${key}`;
 }
 
-export function AgentsDirectory({ agents }: { agents: Agent[] }) {
+export function AgentsDirectory({ initialAgents }: { initialAgents: Agent[] }) {
+  const [allAgents, setAllAgents] = useState<Agent[] | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Lazy load all agents on the client
+  useEffect(() => {
+    fetch('/agents-index.json')
+      .then((res) => res.json())
+      .then((data) => setAllAgents(data as Agent[]))
+      .catch(() => void 0);
+  }, []);
+
+  const agents = allAgents ?? initialAgents;
 
   const sorted = useMemo(
     () => [...agents].sort((a, b) => b.numGhStars - a.numGhStars || a.name.localeCompare(b.name)),
@@ -110,7 +121,7 @@ export function AgentsDirectory({ agents }: { agents: Agent[] }) {
       <div className="mb-8 flex items-baseline gap-3">
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Agents Directory</h2>
         <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 font-mono text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
-          {agents.length.toLocaleString()}
+          {allAgents ? allAgents.length.toLocaleString() : '...'}
         </span>
       </div>
 
