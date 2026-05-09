@@ -8,6 +8,7 @@ import { AGENTS, type AgentTarget } from './agents.js';
 
 export interface AddOptions {
   agentFilter?: string;
+  skillFilter?: string;
   all?: boolean;
   agentsOnly?: boolean;
   skillsOnly?: boolean;
@@ -82,6 +83,11 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
       includeTypes.add('agent');
     }
 
+    if (options.skillFilter) {
+      includeTypes.add('skill');
+    }
+
+    // Filter by content types
     items = items.filter((item) => includeTypes.has(item.type));
 
     if (options.agentFilter) {
@@ -97,6 +103,24 @@ export async function add(source: string, options: AddOptions = {}): Promise<voi
 
       items = items.filter((item) => item.type !== 'agent' || item.name === options.agentFilter);
       console.log(`Filtering to agent: ${options.agentFilter}`);
+    }
+
+    if (options.skillFilter) {
+      const skillExists = items.some(
+        (item) => item.type === 'skill' && item.name === options.skillFilter
+      );
+
+      if (!skillExists) {
+        const availableSkills = items
+          .filter((item) => item.type === 'skill')
+          .map((item) => item.name);
+        throw new Error(
+          `Skill "${options.skillFilter}" not found. Available skills: ${availableSkills.join(', ') || 'none'}`
+        );
+      }
+
+      items = items.filter((item) => item.type !== 'skill' || item.name === options.skillFilter);
+      console.log(`Filtering to skill: ${options.skillFilter}`);
     }
 
     console.log(`Found ${items.length} item(s):`);

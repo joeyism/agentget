@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { add } from './add.js';
 import { listInstalled } from './list.js';
+import { listRemote } from './remote-list.js';
 import { printTargets } from './targets.js';
 
 const program = new Command();
@@ -14,6 +15,7 @@ program
     '--agent <name>',
     'Install only the specified agent by name (includes all skills/instructions/rules)'
   )
+  .option('--skill <name>', 'Install only the specified skill by name')
   .option('--all', 'Install everything (agents, skills, instructions, rules)')
   .option('--agents-only', 'Install only agents (default)')
   .option('--skills-only', 'Install only skills')
@@ -31,6 +33,7 @@ program
       source: string,
       options: {
         agent?: string;
+        skill?: string;
         all?: boolean;
         agentsOnly?: boolean;
         skillsOnly?: boolean;
@@ -45,6 +48,7 @@ program
       try {
         await add(source, {
           agentFilter: options.agent,
+          skillFilter: options.skill,
           all: options.all,
           agentsOnly: options.agentsOnly,
           skillsOnly: options.skillsOnly,
@@ -80,6 +84,40 @@ program
     }) => {
       try {
         await listInstalled({
+          all: options.all,
+          agentsOnly: options.agentsOnly,
+          skillsOnly: options.skillsOnly,
+          instructionsOnly: options.instructionsOnly,
+          rulesOnly: options.rulesOnly,
+        });
+      } catch (err) {
+        console.error(`Error: ${(err as Error).message}`);
+        process.exit(1);
+      }
+    }
+  );
+
+program
+  .command('remote <source>')
+  .description('List available content from a remote GitHub repo (e.g. owner/repo)')
+  .option('--all', 'List everything (agents, skills, instructions, rules)')
+  .option('--agents-only', 'List only agents (default)')
+  .option('--skills-only', 'List only skills')
+  .option('--instructions-only', 'List only instructions')
+  .option('--rules-only', 'List only rules')
+  .action(
+    async (
+      source: string,
+      options: {
+        all?: boolean;
+        agentsOnly?: boolean;
+        skillsOnly?: boolean;
+        instructionsOnly?: boolean;
+        rulesOnly?: boolean;
+      }
+    ) => {
+      try {
+        await listRemote(source, {
           all: options.all,
           agentsOnly: options.agentsOnly,
           skillsOnly: options.skillsOnly,
