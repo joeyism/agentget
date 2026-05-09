@@ -40,6 +40,9 @@ npx agentget add owner/repo --all
 # Install specific agent + all skills/instructions/rules
 npx agentget add owner/repo --agent code-reviewer
 
+# Install specific skill by name
+npx agentget add owner/repo --skill claude-code
+
 # Install only skills
 npx agentget add owner/repo --skills-only
 
@@ -87,6 +90,28 @@ npx agentget list --rules-only
 | `--instructions-only` | Lists instructions only      |
 | `--rules-only`        | Lists rules only             |
 
+## List Remote
+
+```bash
+# List available content from a remote repo (agents only by default)
+npx agentget remote owner/repo
+
+# List everything from a remote repo
+npx agentget remote owner/repo --all
+
+# List only agents
+npx agentget remote owner/repo --agents-only
+
+# List only skills
+npx agentget remote owner/repo --skills-only
+
+# List only instructions
+npx agentget remote owner/repo --instructions-only
+
+# List only rules
+npx agentget remote owner/repo --rules-only
+```
+
 ## Filtering
 
 | Flag                  | Behavior                                                 |
@@ -94,6 +119,7 @@ npx agentget list --rules-only
 | (none)                | Installs agents only (default)                           |
 | `--all`               | Installs everything                                      |
 | `--agent <name>`      | Installs specified agent + all skills/instructions/rules |
+| `--skill <name>`      | Installs only the specified skill                        |
 | `--agents-only`       | Installs agents only (explicit)                          |
 | `--skills-only`       | Installs skills only                                     |
 | `--instructions-only` | Installs instructions only                               |
