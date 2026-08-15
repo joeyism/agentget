@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { AgentsDirectory } from '@/components/AgentsDirectory';
 import { BrandMark } from '@/components/BrandMark';
 import { BuiltinAgents } from '@/components/BuiltinAgents';
+import { CopyableCommand } from '@/components/CopyableCommand';
 import { DocsSection } from '@/components/DocsSection';
-import { HeroCopyButton } from '@/components/HeroCopyButton';
 import { JsonLd } from '@/components/JsonLd';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SubmitAgentSection } from '@/components/SubmitAgentSection';
@@ -51,7 +51,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <HeroCopyButton />
+              <CopyableCommand command="npx agentget add <owner/repo>" variant="hero" />
             </div>
           </div>
         </section>
