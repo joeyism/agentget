@@ -2,7 +2,7 @@ import 'server-only';
 
 import agentsData from '@/public/agents-index.json';
 
-import type { ExternalAgent } from '@/lib/external-agents';
+import type { ExternalAgent } from '@/lib/external-agent';
 
 const EXTERNAL_AGENTS = agentsData as ExternalAgent[];
 
