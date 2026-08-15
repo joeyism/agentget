@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function DocsSection() {
   return (
-    <div
+    <section
       data-testid="docs-section"
       className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20"
     >
@@ -395,6 +395,6 @@ export function DocsSection() {
           </span>
         </Link>
       </div>
-    </div>
+    </section>
   );
 }
