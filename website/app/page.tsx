@@ -28,6 +28,11 @@ export default function Home() {
           name: 'agentget',
           url: 'https://agentget.sh',
           description: 'The AI Agents Package Manager',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://agentget.sh/?q={search_term_string}',
+            'query-input': 'required name=search_term_string',
+          },
         }}
       />
       <SiteHeader active="home" />
