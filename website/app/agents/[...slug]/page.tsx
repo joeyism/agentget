@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { JsonLd } from '@/components/JsonLd';
 import { SiteHeader } from '@/components/SiteHeader';
-import { getExternalAgent, getExternalAgentHref, getExternalAgents } from '@/lib/external-agents';
+import { getExternalAgent, getExternalAgents } from '@/lib/external-agents-catalog';
+import { getExternalAgentHref } from '@/lib/external-agents';
 
 type ExternalAgentPageProps = {
   params: Promise<{
@@ -61,23 +63,20 @@ export default async function ExternalAgentPage({ params }: ExternalAgentPagePro
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'SoftwareApplication',
-            name: agent.name,
-            applicationCategory: 'DeveloperApplication',
-            operatingSystem: 'Any',
-            description: agent.shortDescription,
-            url: `https://agentget.sh/agents/${agent.key}`,
-            offers: {
-              '@type': 'Offer',
-              price: '0',
-              priceCurrency: 'USD',
-            },
-          }),
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: agent.name,
+          applicationCategory: 'DeveloperApplication',
+          operatingSystem: 'Any',
+          description: agent.shortDescription,
+          url: `https://agentget.sh/agents/${agent.key}`,
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+          },
         }}
       />
       <SiteHeader currentPath={`/agents/${slug.join('/')}`} />

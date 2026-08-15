@@ -1,50 +1,33 @@
 import { Metadata } from 'next';
 import { AgentsDirectory } from '@/components/AgentsDirectory';
+import { BrandMark } from '@/components/BrandMark';
 import { BuiltinAgents } from '@/components/BuiltinAgents';
 import { DocsSection } from '@/components/DocsSection';
+import { HeroCopyButton } from '@/components/HeroCopyButton';
+import { JsonLd } from '@/components/JsonLd';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SubmitAgentSection } from '@/components/SubmitAgentSection';
 import { SupportedTargetsMarquee } from '@/components/SupportedTargetsMarquee';
-import { HeroCopyButton } from '@/components/HeroCopyButton';
-import { getExternalAgents } from '@/lib/external-agents';
+import { getTopExternalAgents } from '@/lib/external-agents';
 
 export const metadata: Metadata = {
-  title: 'agentget — AI Agent Directory & Package Manager',
   description:
-    'Browse and install AI agents from GitHub. The open-source package manager for AI coding agents, skills, and instructions. Supports Claude Code, Cursor, OpenCode, and 38 more tools.',
-  alternates: { canonical: 'https://agentget.sh' },
+    'Discover, install, and manage AI agents, skills, and instructions from GitHub. The open-source package manager for AI coding agents — supports 41+ tools.',
+  alternates: { canonical: '/' },
 };
 
-const ASCII_ART = ` █████╗  ██████╗ ███████╗███╗   ██╗████████╗███████╗
-██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝██╔════╝
-███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║   ███████╗
-██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║
-██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   ███████║
-╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝`;
-
 export default function Home() {
-  const allAgents = getExternalAgents();
-
-  // Sort and slice the top 50 agents for initial SSR
-  const top50Agents = [...allAgents].sort((a, b) => b.numGhStars - a.numGhStars).slice(0, 50);
+  const topAgents = getTopExternalAgents(50);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            name: 'agentget',
-            url: 'https://agentget.sh',
-            description: 'The AI Agents Package Manager',
-            potentialAction: {
-              '@type': 'SearchAction',
-              target: 'https://agentget.sh/?q={search_term_string}',
-              'query-input': 'required name=search_term_string',
-            },
-          }),
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'agentget',
+          url: 'https://agentget.sh',
+          description: 'The AI Agents Package Manager',
         }}
       />
       <SiteHeader active="home" />
@@ -53,10 +36,7 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-20 sm:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 lg:gap-14 items-start">
             <div className="w-[56ch] max-w-full">
-              <pre className="text-[11px] sm:text-[12px] lg:text-[13px] leading-[120%] text-white select-none whitespace-pre font-mono font-bold drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]">
-                {ASCII_ART}
-              </pre>
-
+              <BrandMark />
               <SupportedTargetsMarquee />
             </div>
 
@@ -76,21 +56,21 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-white/[0.06]">
-          <AgentsDirectory initialAgents={top50Agents} />
-        </section>
+        <div className="border-t border-white/[0.06]">
+          <AgentsDirectory initialAgents={topAgents} />
+        </div>
 
-        <section className="border-t border-white/[0.06]">
+        <div className="border-t border-white/[0.06]">
           <SubmitAgentSection />
-        </section>
+        </div>
 
-        <section data-testid="builtin-agents-section" className="border-t border-white/[0.06]">
+        <div className="border-t border-white/[0.06]">
           <BuiltinAgents />
-        </section>
+        </div>
 
-        <section data-testid="docs-section" className="border-t border-white/[0.06]">
+        <div className="border-t border-white/[0.06]">
           <DocsSection />
-        </section>
+        </div>
       </main>
     </>
   );

@@ -4,7 +4,10 @@ import { CopyableCommand } from './CopyableCommand';
 
 export function BuiltinAgents() {
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+    <section
+      data-testid="builtin-agents-section"
+      className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20"
+    >
       <div className="mb-10">
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Builtin Agents</h2>
         <p className="mt-2 text-neutral-400 text-sm sm:text-base">
@@ -44,6 +47,6 @@ export function BuiltinAgents() {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

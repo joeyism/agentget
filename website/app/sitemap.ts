@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getExternalAgents } from '@/lib/external-agents';
+import { getExternalAgents } from '@/lib/external-agents-catalog';
 import { getBuiltinAgentDocs } from '@/lib/builtin-agent-docs';
 
 export default function sitemap(): MetadataRoute.Sitemap {

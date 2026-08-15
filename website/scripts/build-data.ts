@@ -186,9 +186,11 @@ function buildSupportedTargets(): SupportedTargetEntry[] {
 }
 
 function main(): void {
+  const TOP_AGENTS_LIMIT = 50;
   const rootDir = resolve(__dirname, '..');
   const sourcePath = resolve(rootDir, 'sources.json');
   const outputPath = resolve(rootDir, 'public', 'agents-index.json');
+  const topAgentsPath = resolve(rootDir, 'public', 'agents-top.json');
   const supportedTargetsPath = resolve(rootDir, 'public', 'supported-targets.json');
 
   console.log('Reading sources.json...');
@@ -232,6 +234,12 @@ function main(): void {
   const output = JSON.stringify(agents);
   writeFileSync(outputPath, output, 'utf-8');
 
+  const topAgents = [...agents]
+    .sort((a, b) => b.numGhStars - a.numGhStars || a.name.localeCompare(b.name))
+    .slice(0, TOP_AGENTS_LIMIT);
+  const topOutput = JSON.stringify(topAgents);
+  writeFileSync(topAgentsPath, topOutput, 'utf-8');
+
   const supportedTargets = buildSupportedTargets();
   writeFileSync(supportedTargetsPath, JSON.stringify(supportedTargets), 'utf-8');
 
@@ -239,6 +247,7 @@ function main(): void {
   const gzipKB = (gzipSync(output).byteLength / 1024).toFixed(1);
   console.log(`Written to ${outputPath}`);
   console.log(`  Raw: ${rawKB}KB | Gzipped (transfer size): ${gzipKB}KB`);
+  console.log(`Written to ${topAgentsPath} (${topAgents.length} agents)`);
   console.log(`Written to ${supportedTargetsPath}`);
   console.log(`Supported targets: ${supportedTargets.length}`);
 

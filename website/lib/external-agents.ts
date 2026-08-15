@@ -1,6 +1,6 @@
 import 'server-only';
 
-import agentsData from '@/public/agents-index.json';
+import topAgentsData from '@/public/agents-top.json';
 
 export interface ExternalAgent {
   key: string;
@@ -21,15 +21,10 @@ export interface ExternalAgent {
   hasValidSourceUrl: boolean;
 }
 
-const EXTERNAL_AGENTS = agentsData as ExternalAgent[];
+const TOP_EXTERNAL_AGENTS = topAgentsData as ExternalAgent[];
 
-export function getExternalAgents() {
-  return EXTERNAL_AGENTS;
-}
-
-export function getExternalAgent(routeSegments: string[]) {
-  const key = routeSegments.join('/');
-  return EXTERNAL_AGENTS.find((agent) => agent.key === key);
+export function getTopExternalAgents(limit = 50) {
+  return TOP_EXTERNAL_AGENTS.slice(0, limit);
 }
 
 export function getExternalAgentHref(key: string) {
