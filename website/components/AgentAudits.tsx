@@ -32,7 +32,7 @@ const CONTROL_STYLES = {
 
 export function AgentAudits() {
   return (
-    <main>
+    <div>
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
         <div className="max-w-3xl">
           <span className="inline-flex items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
@@ -177,6 +177,6 @@ export function AgentAudits() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

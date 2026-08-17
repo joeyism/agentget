@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { JsonLd } from '@/components/JsonLd';
-import { SiteHeader } from '@/components/SiteHeader';
 import { getExternalAgent, getExternalAgents } from '@/lib/external-agents-catalog';
 import { getExternalAgentHref } from '@/lib/external-agents';
 
@@ -79,9 +78,7 @@ export default async function ExternalAgentPage({ params }: ExternalAgentPagePro
           },
         }}
       />
-      <SiteHeader currentPath={`/agents/${slug.join('/')}`} />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <div className="text-sm text-neutral-500">
           <Link href="/" className="hover:text-white transition-colors">
             Home
@@ -197,7 +194,7 @@ export default async function ExternalAgentPage({ params }: ExternalAgentPagePro
             )}
           </aside>
         </section>
-      </main>
+      </div>
     </>
   );
 }

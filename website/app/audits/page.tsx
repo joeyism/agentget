@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AgentAudits } from '@/components/AgentAudits';
-import { SiteHeader } from '@/components/SiteHeader';
 
 export const metadata: Metadata = {
   title: 'AI Agent Capability Audits',
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 export default function AuditsPage() {
   return (
     <>
-      <SiteHeader currentPath="/audits" />
       <AgentAudits />
     </>
   );
