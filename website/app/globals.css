@@ -45,3 +45,9 @@ body {
 .marquee-track:hover {
   animation-play-state: paused;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
