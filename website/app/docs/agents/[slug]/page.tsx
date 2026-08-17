@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { DocsNav } from '@/components/DocsNav';
-import { SiteHeader } from '@/components/SiteHeader';
 import { getBuiltinAgentDoc, getBuiltinAgentDocs } from '@/lib/builtin-agent-docs';
 import { getBuiltinAgentInstallCommand } from '@/lib/builtin-agents';
 
@@ -55,9 +54,7 @@ export default async function AgentDocPage({ params }: AgentDocPageProps) {
 
   return (
     <>
-      <SiteHeader currentPath={`/docs/agents/${slug}`} />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <DocsNav active="agents" />
 
         <div className="text-sm text-neutral-500">
@@ -134,7 +131,7 @@ export default async function AgentDocPage({ params }: AgentDocPageProps) {
             </div>
           </aside>
         </section>
-      </main>
+      </div>
     </>
   );
 }

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { DocsNav } from '@/components/DocsNav';
-import { SiteHeader } from '@/components/SiteHeader';
 import { BUILTIN_AGENTS, getBuiltinAgentInstallCommand } from '@/lib/builtin-agents';
 
 export const metadata: Metadata = {
@@ -15,9 +14,7 @@ export const metadata: Metadata = {
 export default function AgentsDocsPage() {
   return (
     <>
-      <SiteHeader currentPath="/docs/agents" />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <DocsNav active="agents" />
 
         <section className="max-w-3xl">
@@ -60,7 +57,7 @@ export default function AgentsDocsPage() {
             </article>
           ))}
         </section>
-      </main>
+      </div>
     </>
   );
 }

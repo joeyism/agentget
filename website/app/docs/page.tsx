@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { DocsNav } from '@/components/DocsNav';
-import { SiteHeader } from '@/components/SiteHeader';
 import { SubmitAgentSection } from '@/components/SubmitAgentSection';
 import { BUILTIN_AGENTS, getBuiltinAgentInstallCommand } from '@/lib/builtin-agents';
 
@@ -18,9 +17,7 @@ const featuredAgents = BUILTIN_AGENTS.slice(0, 3);
 export default function DocsPage() {
   return (
     <>
-      <SiteHeader currentPath="/docs" />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <DocsNav active="overview" />
 
         <section className="max-w-3xl">
@@ -96,7 +93,7 @@ export default function DocsPage() {
         <div className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8 border-t border-white/[0.06]">
           <SubmitAgentSection />
         </div>
-      </main>
+      </div>
     </>
   );
 }

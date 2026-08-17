@@ -1,18 +1,14 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { AGENT_SUBMISSION_URL } from '@/lib/github';
 
-type ActiveTab = 'home' | 'docs' | 'audits';
-
-export interface SiteHeaderProps {
-  active?: ActiveTab;
-  currentPath?: string;
-}
-
-export function SiteHeader({ active, currentPath }: SiteHeaderProps) {
-  const resolvedActive =
-    active ??
-    (currentPath?.startsWith('/docs') ? 'docs' : currentPath === '/audits' ? 'audits' : 'home');
+export function SiteHeader() {
+  const pathname = usePathname() ?? '/';
+  const activeTab =
+    pathname === '/audits' ? 'audits' : pathname.startsWith('/docs') ? 'docs' : 'home';
 
   const navLinkClass = (isActive: boolean) =>
     isActive ? 'text-white' : 'text-neutral-400 hover:text-white transition-colors';
@@ -38,14 +34,14 @@ export function SiteHeader({ active, currentPath }: SiteHeaderProps) {
           </Link>
         </div>
 
-        <nav className="flex items-center gap-4 sm:gap-5 text-sm whitespace-nowrap">
-          <Link href="/" className={navLinkClass(resolvedActive === 'home')}>
+        <nav aria-label="Primary" className="flex items-center gap-4 sm:gap-5 text-sm whitespace-nowrap">
+          <Link href="/" className={navLinkClass(activeTab === 'home')}>
             Home
           </Link>
-          <Link href="/docs" className={navLinkClass(resolvedActive === 'docs')}>
+          <Link href="/docs" className={navLinkClass(activeTab === 'docs')}>
             Docs
           </Link>
-          <Link href="/audits" className={navLinkClass(resolvedActive === 'audits')}>
+          <Link href="/audits" className={navLinkClass(activeTab === 'audits')}>
             Audits
           </Link>
           <a
