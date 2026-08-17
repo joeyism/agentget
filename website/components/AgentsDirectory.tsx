@@ -95,49 +95,82 @@ export function AgentsDirectory({ initialAgents }: { initialAgents: ExternalAgen
         </p>
       )}
 
-      <div className="flex items-center gap-3 border-b border-white/[0.08] px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-neutral-600 select-none">
-        <span className="w-10 shrink-0 text-right">#</span>
-        <span className="w-36 shrink-0 sm:w-48">Agent</span>
-        <span className="hidden w-40 shrink-0 sm:block">Repo</span>
-        <span className="flex-1 min-w-0">Description</span>
-        <span className="hidden w-24 shrink-0 text-right sm:block">Stars ☆</span>
-        <span className="hidden w-44 shrink-0 text-right sm:block">Actions</span>
+      <div className="overflow-x-auto">
+        <table className="w-full table-fixed border-collapse">
+          <caption className="sr-only">
+            Agents directory — searchable list of {countLabel} agents
+          </caption>
+          <thead>
+            <tr className="text-[11px] font-medium uppercase tracking-wider text-neutral-600 select-none">
+              <th scope="col" className="w-10 shrink-0 py-2.5 pl-4 pr-1.5 text-right">
+                #
+              </th>
+              <th scope="col" className="w-36 shrink-0 py-2.5 pl-1.5 pr-1.5 sm:w-48">
+                Agent
+              </th>
+              <th scope="col" className="hidden w-40 shrink-0 py-2.5 pl-1.5 pr-1.5 sm:table-cell">
+                Repo
+              </th>
+              <th scope="col" className="py-2.5 pl-1.5 pr-4 sm:pr-1.5">
+                Description
+              </th>
+              <th
+                scope="col"
+                className="hidden w-24 shrink-0 py-2.5 pl-1.5 pr-1.5 text-right sm:table-cell"
+              >
+                Stars ☆
+              </th>
+              <th
+                scope="col"
+                className="hidden w-44 shrink-0 py-2.5 pl-1.5 pr-4 text-right sm:table-cell"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            id="agents-table-body"
+            data-testid="agents-table-body"
+            aria-busy={isSearchPending || undefined}
+          >
+            {isSearchPending ? (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="py-20 text-center text-sm text-neutral-600"
+                  role="status"
+                >
+                  Loading catalog…
+                </td>
+              </tr>
+            ) : status === 'error' && query !== '' ? (
+              <tr>
+                <td colSpan={6} className="py-20 text-center text-sm text-neutral-600">
+                  Search needs the full catalog.
+                </td>
+              </tr>
+            ) : rows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-20 text-center text-sm text-neutral-600">
+                  No agents found for &ldquo;{search}&rdquo;
+                </td>
+              </tr>
+            ) : (
+              rows.map((agent, index) => (
+                <AgentDirectoryRow
+                  key={agent.key}
+                  agent={agent}
+                  index={(currentPage - 1) * PAGE_SIZE + index + 1}
+                  isExpanded={expandedKey === agent.key}
+                  onToggleExpand={() =>
+                    setExpandedKey((current) => (current === agent.key ? null : agent.key))
+                  }
+                />
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-
-      <div
-        id="agents-table-body"
-        data-testid="agents-table-body"
-        role="list"
-        aria-busy={isSearchPending || undefined}
-      >
-        {isSearchPending ? (
-          <div className="py-20 text-center text-sm text-neutral-600" role="status">
-            Loading catalog…
-          </div>
-        ) : status === 'error' && query !== '' ? (
-          <div className="py-20 text-center text-sm text-neutral-600">
-            Search needs the full catalog.
-          </div>
-        ) : (
-          rows.map((agent, index) => (
-            <AgentDirectoryRow
-              key={agent.key}
-              agent={agent}
-              index={(currentPage - 1) * PAGE_SIZE + index + 1}
-              isExpanded={expandedKey === agent.key}
-              onToggleExpand={() =>
-                setExpandedKey((current) => (current === agent.key ? null : agent.key))
-              }
-            />
-          ))
-        )}
-      </div>
-
-      {status === 'ready' && query !== '' && filtered.length === 0 && (
-        <div className="py-20 text-center text-sm text-neutral-600">
-          No agents found for &ldquo;{search}&rdquo;
-        </div>
-      )}
 
       {!isSearchPending && totalPages > 1 && (
         <div className="mt-6 flex items-center justify-between pt-5" data-testid="pagination">
